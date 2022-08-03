@@ -61,7 +61,7 @@ function getTailwindUtils(decl) {
       if (prop) {
         output = prop[val] || '';
       } else {
-        debug('Unknown prop: ', decl.prop);
+        console.error('Unknown prop: ', decl.prop);
       }
   }
 
