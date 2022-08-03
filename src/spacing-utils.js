@@ -2,7 +2,7 @@
 
 const TAILWIND_CLASSES = require('./constants');
 
-const getProximateKey = require('./get-proximate-key');
+const getClosestValidValue = require('./get-proximate-key');
 
 const spacingProps = {
   margin: {
@@ -19,6 +19,17 @@ const spacingProps = {
   },
 };
 
+const getSizeClass = (propertyName, currentValue) => {
+  const isNegative = currentValue.startsWith('-');
+  const positiveValue = isNegative ? currentValue.substring(1) : currentValue;
+
+  const hash = TAILWIND_CLASSES[propertyName];
+  const closestValidValue = getClosestValidValue(hash, positiveValue);
+  const positiveOutputValue = hash[positiveValue] || hash[closestValidValue];
+
+  return isNegative ? `-${positiveOutputValue}` : positiveOutputValue;
+};
+
 function getSpacingUtils(decl) {
   if (decl.value.includes('var') || decl.value.includes('calc')) return '';
   const propName = decl.prop;
@@ -28,25 +39,16 @@ function getSpacingUtils(decl) {
   // padding: 0;
   // padding-left / padding-right / padding-top / padding-bottom
   if (values.length === 1) {
-    const hash = TAILWIND_CLASSES[decl.prop];
-    const proximateKey = getProximateKey(hash, values[0]);
-    output = hash[values[0]] || hash[proximateKey];
+    output = getSizeClass(decl.prop, values[0]);
   }
+
   // padding: topBottom leftRight;
   if (values.length === 2) {
     const [topBottom, leftRight] = values;
 
-    const leftProp = spacingProps[propName].left;
-    const topProp = spacingProps[propName].top;
+    const px = getSizeClass(spacingProps[propName].left, leftRight);
+    const py = getSizeClass(spacingProps[propName].top, topBottom);
 
-    const plHash = TAILWIND_CLASSES[leftProp];
-    const ptHash = TAILWIND_CLASSES[topProp];
-
-    const leftRightProximateKey = getProximateKey(plHash, leftRight);
-    const topBottomProximateKey = getProximateKey(ptHash, topBottom);
-
-    const px = plHash[leftRight] || plHash[leftRightProximateKey];
-    const py = ptHash[topBottom] || ptHash[topBottomProximateKey];
     output = px.replace('l', 'x') + ' ' + py.replace('t', 'y');
   }
 
@@ -54,21 +56,10 @@ function getSpacingUtils(decl) {
   if (values.length === 3) {
     const [top, leftRight, bottom] = values;
 
-    const leftProp = spacingProps[propName].left;
-    const topProp = spacingProps[propName].top;
-    const bottomProp = spacingProps[propName].bottom;
+    const pt = getSizeClass(spacingProps[propName].top, top);
+    const px = getSizeClass(spacingProps[propName].left, leftRight);
+    const pb = getSizeClass(spacingProps[propName].bottom, bottom);
 
-    const ptHash = TAILWIND_CLASSES[topProp];
-    const plHash = TAILWIND_CLASSES[leftProp];
-    const pbHash = TAILWIND_CLASSES[bottomProp];
-
-    const topProximatekey = getProximateKey(ptHash, top);
-    const leftProximatekey = getProximateKey(plHash, leftRight);
-    const bottomProximatekey = getProximateKey(ptHash, bottom);
-
-    const pt = ptHash[top] || ptHash[topProximatekey];
-    const px = plHash[leftRight] || plHash[leftProximatekey];
-    const pb = pbHash[bottom] || pbHash[bottomProximatekey];
     output = pt + ' ' + px.replace('l', 'x') + ' ' + pb;
   }
 
@@ -76,25 +67,10 @@ function getSpacingUtils(decl) {
   if (values.length === 4) {
     const [top, right, bottom, left] = values;
 
-    const leftProp = spacingProps[propName].left;
-    const rightProp = spacingProps[propName].right;
-    const topProp = spacingProps[propName].top;
-    const bottomProp = spacingProps[propName].bottom;
-
-    const ptHash = TAILWIND_CLASSES[topProp];
-    const plHash = TAILWIND_CLASSES[leftProp];
-    const prHash = TAILWIND_CLASSES[rightProp];
-    const pbHash = TAILWIND_CLASSES[bottomProp];
-
-    const topProximatekey = getProximateKey(ptHash, top);
-    const leftProximatekey = getProximateKey(plHash, left);
-    const rightProximatekey = getProximateKey(prHash, right);
-    const bottomProximatekey = getProximateKey(ptHash, bottom);
-
-    const pt = ptHash[top] || ptHash[topProximatekey];
-    const pl = plHash[left] || plHash[leftProximatekey];
-    const pr = prHash[right] || prHash[rightProximatekey];
-    const pb = pbHash[bottom] || pbHash[bottomProximatekey];
+    const pl = getSizeClass(spacingProps[propName].left, left);
+    const pr = getSizeClass(spacingProps[propName].right, right);
+    const pt = getSizeClass(spacingProps[propName].top, top);
+    const pb = getSizeClass(spacingProps[propName].bottom, bottom);
 
     output = pt + ' ' + pr + ' ' + pb + ' ' + pl;
   }
