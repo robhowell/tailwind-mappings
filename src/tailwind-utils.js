@@ -9,6 +9,27 @@ const { getBorderUtils, getBorderColorUtils } = require('./border-utils');
 const getBorderRadiusUtils = require('./border-radius-utils');
 const getColorUtils = require('./color-utils');
 
+const getValueBetweenBrackets = (value) => {
+  const openBracket = value.indexOf('(');
+  const closeBracket = value.indexOf(')');
+  return value.substring(openBracket + 1, closeBracket);
+};
+
+const getArbitraryClass = (prop, value) => {
+  if (prop === 'transform' && value.includes('scaleX'))
+    return `scale-x-[${getValueBetweenBrackets(value)}]`;
+
+  if (prop === 'transform' && value.includes('scaleY'))
+    return `scale-y-[${getValueBetweenBrackets(value)}]`;
+
+  if (prop === 'transform' && value.includes('scale'))
+    return `scale-[${getValueBetweenBrackets(value)}]`;
+
+  console.log(`Unknown value: ${prop}: ${value}`);
+
+  return '';
+};
+
 function getTailwindUtils(decl) {
   const prop = TAILWIND_CLASSES[decl.prop];
   debug('prop = ', decl.prop);
@@ -58,8 +79,10 @@ function getTailwindUtils(decl) {
       break;
 
     default:
-      if (prop) {
+      if (prop && prop[val]) {
         output = prop[val] || '';
+      } else if (prop) {
+        output = getArbitraryClass(decl.prop, val);
       } else {
         console.error('Unknown prop: ', decl.prop);
       }
