@@ -25,7 +25,7 @@ const getArbitraryClass = (prop, value) => {
   if (prop === 'transform' && value.includes('scale'))
     return `scale-[${getValueBetweenBrackets(value)}]`;
 
-  console.log(`Unknown value: ${prop}: ${value}`);
+  console.error(`Unknown value: ${prop}: ${value}`);
 
   return '';
 };
