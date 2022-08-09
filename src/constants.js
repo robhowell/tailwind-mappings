@@ -811,6 +811,7 @@ const TAILWIND_CLASSES = {
     '1rem': 'rounded-2xl',
     '1.5rem': 'rounded-3xl',
     '9999px': 'rounded-full',
+    '100%': 'rounded-full',
   },
   'border-width': {
     '0px': 'border-none',
