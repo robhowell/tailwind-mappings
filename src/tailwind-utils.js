@@ -16,27 +16,39 @@ const getValueBetweenBrackets = (value) => {
 };
 
 const getArbitraryClass = (prop, value) => {
-  if (prop === 'transform' && value.includes('scaleX'))
-    return `scale-x-[${getValueBetweenBrackets(value)}]`;
+  if (prop === 'transform') {
+    if (value.includes('scaleX'))
+      return `scale-x-[${getValueBetweenBrackets(value)}]`;
 
-  if (prop === 'transform' && value.includes('scaleY'))
-    return `scale-y-[${getValueBetweenBrackets(value)}]`;
+    if (value.includes('scaleY'))
+      return `scale-y-[${getValueBetweenBrackets(value)}]`;
 
-  if (prop === 'transform' && value.includes('scale'))
-    return `scale-[${getValueBetweenBrackets(value)}]`;
+    if (value.includes('scale'))
+      return `scale-[${getValueBetweenBrackets(value)}]`;
+  }
 
   console.error(`Unknown value: ${prop}: ${value}`);
 
   return '';
 };
 
-function getTailwindUtils(decl) {
-  const prop = TAILWIND_CLASSES[decl.prop];
-  debug('prop = ', decl.prop);
-  debug('value = ', decl.value);
+function getTailwindUtils(incomingDecl) {
+  const prop = TAILWIND_CLASSES[incomingDecl.prop];
+  debug('prop = ', incomingDecl.prop);
+  debug('value = ', incomingDecl.value);
+
   // remove !important from values
-  const val = decl.value.replace(' !important', '');
+  const val = incomingDecl.value
+    .replace(' !important', '')
+    .replace('!important', '');
+
+  const decl = {
+    ...incomingDecl,
+    value: val,
+  };
+
   let output = '';
+
   switch (decl.prop) {
     case 'margin':
     case 'margin-left':
