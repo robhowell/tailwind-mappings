@@ -1087,6 +1087,298 @@ const TAILWIND_CLASSES = {
     'scaleX(1.5)': 'scale-x-150',
     'scaleY(1.5)': 'scale-y-150',
   },
+
+  'letter-spacing': {
+    '-0.05em': 'tracking-tighter',
+    '-0.025em': 'tracking-tight',
+    '0em': 'tracking-normal',
+    '0.025em': 'tracking-wide',
+    '0.05em': 'tracking-wider',
+    '0.1em': 'tracking-widest',
+  },
+
+  transition: {
+    none: 'transition-none',
+  },
+
+  'list-style': {
+    none: 'list-none',
+  },
+
+  'touch-action': {
+    manipulation: 'touch-manipulation',
+  },
+
+  content: {
+    '': 'content-none',
+  },
+
+  'scrollbar-color': {},
+  'scrollbar-width': {},
+
+  'border-top': {
+    none: 'border-t-0',
+  },
+
+  'border-right': {
+    none: 'border-r-0',
+  },
+
+  'border-bottom': {
+    none: 'border-b-0',
+  },
+
+  'border-left': {
+    none: 'border-l-0',
+  },
+
+  'border-top-left-radius': {
+    none: 'rounded-tl-none',
+  },
+
+  'border-top-right-radius': {
+    none: 'rounded-tr-none',
+  },
+
+  'border-bottom-left-radius': {
+    none: 'rounded-bl-none',
+  },
+
+  'border-bottom-right-radius': {
+    none: 'rounded-br-none',
+  },
+
+  '-ms-overflow-style': {
+    none: '[-ms-overflow-style:none]',
+  },
+
+  '-webkit-font-smoothing': {
+    antialiased: '[-webkit-font-smoothing:antialiased]',
+  },
+
+  '-moz-osx-font-smoothing': {
+    grayscale: '[-moz-osx-font-smoothing:grayscale]',
+  },
+
+  animation: {
+    none: 'animate-none',
+  },
+
+  'outline-offset': {
+    '-5px': 'outline-offset-[-5px]',
+    '-4px': 'outline-offset-[-4px]',
+    '-2px': 'outline-offset-[-2px]',
+    '-1px': 'outline-offset-[-1px]',
+    0: 'outline-offset-0',
+    '0px': 'outline-offset-0',
+    '1px': 'outline-offset-1',
+    '2px': 'outline-offset-2',
+    '3px': 'outline-offset-[3px]',
+    '4px': 'outline-offset-4',
+    '5px': 'outline-offset-[5px]',
+    '6px': 'outline-offset-[6px]',
+    '8px': 'outline-offset-8',
+    '9px': 'outline-offset-[9px]',
+  },
+
+  'box-shadow': {
+    none: 'shadow-none',
+  },
+
+  'grid-column-start': {
+    1: 'col-start-1',
+    2: 'col-start-2',
+    3: 'col-start-3',
+    4: 'col-start-4',
+    5: 'col-start-5',
+    auto: 'col-start-auto',
+  },
+
+  'grid-column-end': {
+    1: 'col-end-1',
+    2: 'col-end-2',
+    3: 'col-end-3',
+    4: 'col-end-4',
+    5: 'col-end-5',
+    auto: 'col-end-auto',
+  },
+
+  'grid-row-start': {
+    1: 'row-start-1',
+    2: 'row-start-2',
+    3: 'row-start-3',
+    4: 'row-start-4',
+    5: 'row-start-5',
+    auto: 'row-start-auto',
+  },
+
+  'grid-row-end': {
+    1: 'row-end-1',
+    2: 'row-end-2',
+    3: 'row-end-3',
+    4: 'row-end-4',
+    5: 'row-end-5',
+    auto: 'row-end-auto',
+  },
+
+  gap: {
+    '1rem': 'gap-4',
+  },
+
+  outline: {
+    none: 'outline-0',
+  },
+
+  'flex-basis': {
+    0: 'basis-0',
+  },
+
+  'contain-intrinsic-size': {
+    0: '[contain-intrinsic-size:0]',
+  },
+
+  'content-visibility': {
+    auto: '[content-visibility:auto]',
+  },
+
+  'grid-template-rows': {
+    none: 'grid-rows-none',
+  },
+
+  'border-top-width': {
+    0: 'border-t-0',
+    '1px': 'border-t-[1px]',
+  },
+
+  'border-right-width': {
+    0: 'border-r-0',
+    '1px': 'border-r-[1px]',
+  },
+
+  'border-bottom-width': {
+    0: 'border-b-0',
+    '1px': 'border-b-[1px]',
+  },
+
+  'border-left-width': {
+    0: 'border-l-0',
+    '1px': 'border-l-[1px]',
+  },
+
+  filter: {},
+
+  'text-shadow': {},
+
+  'break-inside': {
+    avoid: 'break-inside-avoid',
+  },
+
+  'column-gap': {},
+
+  'column-count': {
+    1: '[column-count:1]',
+    2: '[column-count:2]',
+    3: '[column-count:3]',
+  },
+
+  'scroll-margin-top': {},
+
+  '-webkit-touch-callout': {
+    none: '[-webkit-touch-callout:none]',
+  },
+
+  'outline-color': {},
+
+  'animation-fill-mode': {
+    forwards: '[animation-fill-mode:forwards]',
+    both: '[animation-fill-mode:both]',
+  },
+
+  'font-family': {
+    inherit: '[font-family:inherit]',
+  },
+
+  'transition-duration': {},
+
+  'transition-timing-function': {},
+
+  'transition-property': {},
+
+  'border-bottom-style': {},
+
+  clip: {},
+
+  'clip-path': {},
+
+  'animation-name': {},
+
+  'animation-duration': {},
+
+  'animation-iteration-count': {},
+
+  'animation-timing-function': {},
+
+  'animation-delay': {},
+
+  'grid-area': {},
+
+  'grid-template-areas': {},
+
+  'row-gap': {},
+
+  'flex-flow': {},
+
+  align: {},
+
+  '-webkit-box-shadow': {},
+
+  direction: {},
+
+  'border-image': {},
+
+  'transform-style': {},
+
+  'backface-visibility': {},
+
+  'stroke-linecap': {},
+
+  'stroke-dasharray': {},
+
+  'stroke-dashoffset': {},
+
+  'text-indent': {},
+
+  'border-left-color': {},
+
+  'border-top-color': {},
+
+  'text-rendering': {},
+
+  'overflow-anchor': {},
+
+  'outline-style': {},
+
+  'outline-width': {},
+
+  '-webkit-text-fill-color': {},
+
+  'border-bottom-color': {},
+
+  'border-right-color': {},
+
+  'scroll-behavior': {},
+
+  'transition-delay': {},
+
+  '-webkit-tap-highlight-color': {
+    transparent: '[-webkit-tap-highlight-color:transparent]',
+  },
+
+  '--push-across-sidebar-open-width': {},
+
+  '--visible-promotion-banner-height': {},
+
+  '--tooltipwidth': {},
 };
 
 module.exports = TAILWIND_CLASSES;

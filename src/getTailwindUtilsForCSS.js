@@ -22,14 +22,17 @@ const redundantCrossBrowserProperties = [
   '-o-animation-timing-function',
   '-o-object-fit',
   '-webkit-animation',
+  '-webkit-animation-delay',
   '-webkit-animation-duration',
   '-webkit-animation-fill-mode',
   '-webkit-animation-iteration-count',
   '-webkit-animation-name',
   '-webkit-animation-timing-function',
   '-webkit-appearance',
+  '-webkit-filter',
   '-webkit-transform',
   '-webkit-transition',
+  '-webkit-transition-duration',
   '-webkit-user-select',
 ];
 
