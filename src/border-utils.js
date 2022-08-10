@@ -61,7 +61,7 @@ function getBorderColorUtils(decl) {
   const color = decl.value;
   const borderValues = color.split(' ');
 
-  if (borderValues.length === 4) {
+  if (borderValues.length >= 2) {
     const borderColorClasses = borderValues
       .map((value) => borderColor[value] || getColorUtils({ ...decl, value }))
       .join(' ');
