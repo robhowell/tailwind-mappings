@@ -2,6 +2,40 @@ const csstree = require('css-tree');
 
 const getTailwindUtils = require('./tailwind-utils');
 
+const redundantCrossBrowserProperties = [
+  '-moz-animation',
+  '-moz-animation-duration',
+  '-moz-animation-fill-mode',
+  '-moz-animation-iteration-count',
+  '-moz-animation-name',
+  '-moz-animation-timing-function',
+  '-moz-appearance',
+  '-moz-transition',
+  '-moz-user-select',
+  '-ms-transform',
+  '-ms-user-select',
+  '-o-animation',
+  '-o-animation-duration',
+  '-o-animation-fill-mode',
+  '-o-animation-iteration-count',
+  '-o-animation-name',
+  '-o-animation-timing-function',
+  '-o-object-fit',
+  '-webkit-animation',
+  '-webkit-animation-duration',
+  '-webkit-animation-fill-mode',
+  '-webkit-animation-iteration-count',
+  '-webkit-animation-name',
+  '-webkit-animation-timing-function',
+  '-webkit-appearance',
+  '-webkit-transform',
+  '-webkit-transition',
+  '-webkit-user-select',
+];
+
+const removeRedundantCrossBrowserProperties = (rule) =>
+  !redundantCrossBrowserProperties.includes(rule.prop);
+
 const getTailwindUtilsForCSS = (css) => {
   const ast = csstree.parse(css);
 
@@ -19,16 +53,22 @@ const getTailwindUtilsForCSS = (css) => {
 
       const currentClassesArray = [];
 
-      this.rule.block.children.forEach((cssDeclarationString) => {
-        const [prop, value] = csstree.generate(cssDeclarationString).split(':');
+      const cssRuleStrings = this.rule.block.children;
 
-        const cssDeclarationObject = {
+      const cssRules = cssRuleStrings.map((cssRuleString) => {
+        const [prop, value] = csstree.generate(cssRuleString).split(':');
+
+        return {
           prop,
           value,
         };
-
-        currentClassesArray.push(getTailwindUtils(cssDeclarationObject));
       });
+
+      cssRules
+        .filter(removeRedundantCrossBrowserProperties)
+        .forEach((cssRule) => {
+          currentClassesArray.push(getTailwindUtils(cssRule));
+        });
 
       currentNodeClasses.classes = currentClassesArray.join(' ');
     }
