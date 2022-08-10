@@ -74,7 +74,12 @@ function getProximateColor(decl) {
 }
 
 function getColorUtils(decl) {
+  // TODO: Add support for linear-gradients, or throw an error
+  if (decl.value.includes('linear-gradient')) return ' ';
+
+  // TODO: Add support for URLs, or throw an error
   if (decl.value.includes('url')) return ' ';
+
   const hash = TAILWIND_CLASSES[decl.prop];
 
   return hash
