@@ -22,10 +22,12 @@ function getProximateKey(valueHash, value) {
 }
 
 function getBorderUtils(decl) {
-  if (decl.value === 'none') return '';
-  if (decl.value === 'transparent') return '';
+  if (decl.value === 'none') return 'border-0';
+  if (decl.value === 'transparent') return 'border-transparent';
   if (decl.value === '0') return 'border-0';
+
   const borderValues = decl.value.split(' ');
+
   if (borderValues.length > 2) {
     const [width, style, ...colorValue] = borderValues;
     const color = colorValue.join('');
@@ -38,13 +40,16 @@ function getBorderUtils(decl) {
     const _width = borderWidth[width] || 'border';
     const _style = borderStyle[style] || '';
     const _color = borderColor[color] || getColorUtils(decl);
+
     let result = _width + ' ' + _style + ' ' + _color;
+
     if (color.includes('rgba')) {
       const [, , , opacity] = chroma(color)._rgb;
       const proximateKey = getProximateKey(borderOpacity, opacity);
       const _opacity = borderOpacity[opacity] || borderOpacity[proximateKey];
       result += ' ' + _opacity;
     }
+
     return result;
   } else return '';
 }
@@ -54,14 +59,26 @@ function getBorderColorUtils(decl) {
   const borderOpacity = TAILWIND_CLASSES['border-opacity'];
 
   const color = decl.value;
+  const borderValues = color.split(' ');
+
+  if (borderValues.length === 4) {
+    const borderColorClasses = borderValues
+      .map((value) => borderColor[value] || getColorUtils({ ...decl, value }))
+      .join(' ');
+
+    return borderColorClasses;
+  }
+
   const _color = borderColor[color] || getColorUtils(decl);
   let result = _color;
+
   if (color.includes('rgba')) {
     const [, , , opacity] = chroma(color)._rgb;
     const proximateKey = getProximateKey(borderOpacity, opacity);
     const _opacity = borderOpacity[opacity] || borderOpacity[proximateKey];
     result += ' ' + _opacity;
   }
+
   return result;
 }
 
