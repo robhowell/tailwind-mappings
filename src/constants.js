@@ -733,6 +733,8 @@ const TAILWIND_CLASSES = {
     '#FFF': 'text-white',
     '#FFFFFF': 'text-white',
     white: 'text-white',
+    unset: 'text-[unset]',
+    initial: 'text-[initial]',
   },
   'text-transform': {
     uppercase: 'uppercase',
@@ -772,6 +774,8 @@ const TAILWIND_CLASSES = {
   'background-color': {
     transparent: 'bg-transparent',
     currentColor: 'bg-current',
+    unset: 'bg-[unset]',
+    initial: 'bg-[initial]',
   },
   'background-position': {
     bottom: 'bg-bottom',
