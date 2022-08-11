@@ -31,6 +31,7 @@ const getSizeClass = (propertyName, currentValue) => {
 };
 
 function getSpacingUtils(decl) {
+  // Add support for var and calc in getSpacingUtils
   if (decl.value.includes('var') || decl.value.includes('calc')) return '';
   const propName = decl.prop;
   const values = decl.value.split(' ');
