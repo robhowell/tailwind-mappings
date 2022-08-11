@@ -7,7 +7,7 @@ const debug = require('debug')('tailwind-mappings');
 const { getBorderUtils, getBorderColorUtils } = require('./border-utils');
 const getBorderRadiusUtils = require('./border-radius-utils');
 const getColorUtils = require('./color-utils');
-const replaceAll = require('./replaceAll');
+const getArbitraryClass = require('./getArbitraryClass');
 
 const getValueBetweenBrackets = (value) => {
   const openBracket = value.indexOf('(');
@@ -27,7 +27,7 @@ const getUnknownClass = (prop, value) => {
       return `scale-[${getValueBetweenBrackets(value)}]`;
   }
 
-  console.error(`Unknown value: ${prop}: ${value}`);
+  // console.error(`Unknown value: ${prop}: ${value}`);
 
   return '';
 };
@@ -47,12 +47,18 @@ function getTailwindUtils(incomingDecl) {
     value: val,
   };
 
-  if (['animation'].includes(decl.prop)) {
-    return `[${decl.prop}:${replaceAll(
-      replaceAll(decl.value, ' ', '_'),
-      '\n',
-      '_'
-    )}]`;
+  if (
+    [
+      'animation',
+      'animation-delay',
+      'animation-duration',
+      'animation-iteration-count',
+      'animation-name',
+      'animation-timing-function',
+      'backface-visibility',
+    ].includes(decl.prop)
+  ) {
+    return getArbitraryClass(decl);
   }
 
   if (
@@ -77,7 +83,11 @@ function getTailwindUtils(incomingDecl) {
   }
 
   if (['color', 'background-color', 'background'].includes(decl.prop)) {
-    if (decl.value !== 'inherit' && !decl.value.includes('var')) {
+    if (decl.value === 'inherit') {
+      return getArbitraryClass(decl);
+    }
+
+    if (!decl.value.includes('var')) {
       return getColorUtils(decl);
     }
 
