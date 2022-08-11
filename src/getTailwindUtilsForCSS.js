@@ -44,7 +44,7 @@ const getTailwindUtilsForCSS = (css) => {
 
   let tailwindClassesArray = [];
 
-  csstree.walk(ast, function nodeFunction(node, item, list) {
+  csstree.walk(ast, function nodeFunction(node) {
     if (node.type === 'Selector') {
       const selectorString = csstree.generate(node);
 
@@ -59,7 +59,11 @@ const getTailwindUtilsForCSS = (css) => {
       const cssRuleStrings = this.rule.block.children;
 
       const cssRules = cssRuleStrings.map((cssRuleString) => {
-        const [prop, value] = csstree.generate(cssRuleString).split(':');
+        const [prop, ...valueArray] = csstree
+          .generate(cssRuleString)
+          .split(':');
+
+        const value = valueArray.join(':');
 
         return {
           prop,
