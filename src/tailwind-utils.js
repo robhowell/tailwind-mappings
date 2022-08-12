@@ -66,7 +66,9 @@ function getTailwindUtils(incomingDecl) {
       'border-right',
       'border-top',
       'border-bottom',
-    ].includes(decl.prop)
+    ].includes(decl.prop) ||
+    decl.value.includes('url') ||
+    decl.value.includes('var')
   ) {
     return getArbitraryClass(decl);
   }
