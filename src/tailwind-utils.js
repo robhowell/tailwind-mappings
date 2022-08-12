@@ -57,6 +57,10 @@ function getTailwindUtils(incomingDecl) {
       'animation-timing-function',
       'backface-visibility',
       'background-image',
+      'border-bottom-style',
+      'border-top-style',
+      'border-left-style',
+      'border-right-style',
     ].includes(decl.prop)
   ) {
     return getArbitraryClass(decl);
