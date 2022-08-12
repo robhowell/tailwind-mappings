@@ -61,6 +61,11 @@ function getTailwindUtils(incomingDecl) {
       'border-top-style',
       'border-left-style',
       'border-right-style',
+      'border-image',
+      'border-left',
+      'border-right',
+      'border-top',
+      'border-bottom',
     ].includes(decl.prop)
   ) {
     return getArbitraryClass(decl);
