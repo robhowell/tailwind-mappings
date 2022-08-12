@@ -27,7 +27,7 @@ const getUnknownClass = (prop, value) => {
       return `scale-[${getValueBetweenBrackets(value)}]`;
   }
 
-  // console.error(`Unknown value: ${prop}: ${value}`);
+  console.error(`Unknown value: ${prop}: ${value}`);
 
   return '';
 };
@@ -66,6 +66,10 @@ function getTailwindUtils(incomingDecl) {
       'border-right',
       'border-top',
       'border-bottom',
+      'content',
+      'grid-area',
+      'grid-template-areas',
+      'filter',
     ].includes(decl.prop) ||
     decl.value.includes('url') ||
     decl.value.includes('var')
@@ -125,8 +129,43 @@ function getTailwindUtils(incomingDecl) {
     return prop[decl.value] || '';
   }
 
+  const propMap = {
+    'min-height': 'min-h',
+    'min-width': 'min-w',
+    'max-height': 'max-h',
+    'max-width': 'max-w',
+    width: 'w',
+    height: 'h',
+    transition: 'transition',
+    'z-index': 'z',
+    transform: 'transform',
+    'letter-spacing': 'tracking',
+    'line-height': 'leading',
+    'font-size': 'text',
+    top: 'top',
+    left: 'left',
+    right: 'right',
+    bottom: 'bottom',
+    gap: 'gap',
+    stroke: 'stroke',
+    fill: 'fill',
+    'grid-template-columns': 'grid-cols',
+    'grid-template-rows': 'grid-rows',
+    flex: 'flex',
+    'box-shadow': 'shadow',
+    'flex-basis': 'basis',
+  };
+
   if (prop && prop[val]) {
     return prop[val] || '';
+  } else if (Object.keys(propMap).includes(decl.prop)) {
+    return getArbitraryClass(
+      {
+        ...decl,
+        prop: propMap[decl.prop],
+      },
+      true
+    );
   } else if (prop) {
     return getUnknownClass(decl.prop, val);
   }
