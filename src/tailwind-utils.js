@@ -9,6 +9,53 @@ const getBorderRadiusUtils = require('./border-radius-utils');
 const getColorUtils = require('./color-utils');
 const getArbitraryClass = require('./getArbitraryClass');
 
+// These CSS properties are not currently supported by Tailwind. Any CSS
+// properties added to this array will be converted to an arbitrary class, such
+// as [background-image:url('https://example.com/image.png')]
+const arbitraryProperties = [
+  '--apple-pay-button-width',
+  '--apple-pay-button-height',
+  '--apple-pay-button-border-radius',
+  '--apple-pay-button-padding',
+  '--color-brand',
+  '--tooltipwidth',
+  '--push-across-sidebar-open-width',
+  '--visible-promotion-banner-height',
+  '-webkit-box-shadow',
+  '-webkit-text-fill-color',
+  'animation-delay',
+  'animation-duration',
+  'animation-iteration-count',
+  'animation-name',
+  'animation-timing-function',
+  'animation',
+  'backface-visibility',
+  'background-image',
+  'border-bottom-style',
+  'border-bottom',
+  'border-image',
+  'border-left-style',
+  'border-left',
+  'border-right-style',
+  'border-right',
+  'border-top-style',
+  'border-top',
+  'column-gap',
+  'content',
+  'filter',
+  'flex-flow',
+  'grid-area',
+  'grid-auto-rows',
+  'grid-template-areas',
+  'overflow-anchor',
+  'row-gap',
+  'scrollbar-width',
+  'text-rendering',
+  'text-shadow',
+  'transform-style',
+  'transition-property',
+];
+
 const getValueBetweenBrackets = (value) => {
   const openBracket = value.indexOf('(');
   const closeBracket = value.indexOf(')');
@@ -48,29 +95,7 @@ function getTailwindUtils(incomingDecl) {
   };
 
   if (
-    [
-      'animation',
-      'animation-delay',
-      'animation-duration',
-      'animation-iteration-count',
-      'animation-name',
-      'animation-timing-function',
-      'backface-visibility',
-      'background-image',
-      'border-bottom-style',
-      'border-top-style',
-      'border-left-style',
-      'border-right-style',
-      'border-image',
-      'border-left',
-      'border-right',
-      'border-top',
-      'border-bottom',
-      'content',
-      'grid-area',
-      'grid-template-areas',
-      'filter',
-    ].includes(decl.prop) ||
+    arbitraryProperties.includes(decl.prop) ||
     decl.value.includes('url') ||
     decl.value.includes('var')
   ) {
