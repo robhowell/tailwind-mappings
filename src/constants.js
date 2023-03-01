@@ -1843,6 +1843,7 @@ const TAILWIND_CLASSES = {
     'scaleY(1.25)': 'scale-y-125',
     'scaleY(1.5)': 'scale-y-150',
     'scaleY(1)': 'scale-y-100',
+    'scaleX(-1)': 'scale-x-[-1]',
   },
   'transform-origin': {
     bottom: 'origin-bottom',
