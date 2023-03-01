@@ -6,7 +6,7 @@ const chroma = require('chroma-js');
 const getColorUtils = require('./color-utils');
 
 // Get the nearest matching Tailwind value
-function getProximateKey(valueHash, value) {
+function getClosestKey(valueHash, value) {
   const values = Object.keys(valueHash);
 
   let distance = Math.abs(values[0] - value);
@@ -45,8 +45,8 @@ function getBorderUtils(decl) {
 
     if (color.includes('rgba')) {
       const [, , , opacity] = chroma(color)._rgb;
-      const proximateKey = getProximateKey(borderOpacity, opacity);
-      const _opacity = borderOpacity[opacity] || borderOpacity[proximateKey];
+      const closestKey = getClosestKey(borderOpacity, opacity);
+      const _opacity = borderOpacity[opacity] || borderOpacity[closestKey];
       result += ' ' + _opacity;
     }
 
@@ -74,8 +74,8 @@ function getBorderColorUtils(decl) {
 
   if (color.includes('rgba')) {
     const [, , , opacity] = chroma(color)._rgb;
-    const proximateKey = getProximateKey(borderOpacity, opacity);
-    const _opacity = borderOpacity[opacity] || borderOpacity[proximateKey];
+    const closestKey = getClosestKey(borderOpacity, opacity);
+    const _opacity = borderOpacity[opacity] || borderOpacity[closestKey];
     result += ' ' + _opacity;
   }
 

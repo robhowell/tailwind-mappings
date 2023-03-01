@@ -2,7 +2,7 @@
 
 const TAILWIND_CLASSES = require('./constants');
 
-const getClosestValidValue = require('./get-proximate-key');
+const getClosestKey = require('./getClosestKey');
 
 const spacingProps = {
   margin: {
@@ -24,7 +24,7 @@ const getSizeClass = (propertyName, currentValue) => {
   const positiveValue = isNegative ? currentValue.substring(1) : currentValue;
 
   const hash = TAILWIND_CLASSES[propertyName];
-  const closestValidValue = getClosestValidValue(hash, positiveValue);
+  const closestValidValue = getClosestKey(hash, positiveValue);
   const positiveOutputValue = hash[positiveValue] || hash[closestValidValue];
 
   return isNegative ? `-${positiveOutputValue}` : positiveOutputValue;

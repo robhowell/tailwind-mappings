@@ -69,7 +69,7 @@ const stripDefault = (string) => {
   return string.replace('-DEFAULT', '');
 };
 
-function getProximateColor(decl) {
+function getClosestColor(decl) {
   const twColors = Object.keys(colors)
     .map((c) => {
       const shades = colors[c];
@@ -149,8 +149,8 @@ function getColorUtils(decl) {
   const hash = TAILWIND_CLASSES[decl.prop];
 
   return hash
-    ? hash[decl.value] || getProximateColor(decl)
-    : getProximateColor(decl);
+    ? hash[decl.value] || getClosestColor(decl)
+    : getClosestColor(decl);
 }
 
 module.exports = getColorUtils;

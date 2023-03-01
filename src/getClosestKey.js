@@ -11,7 +11,7 @@ function convertPxtoRem(value) {
 }
 
 // Get the nearest matching Tailwind value
-function getProximateKey(valueHash, value) {
+function getClosestKey(valueHash, value) {
   const values = Object.keys(valueHash).map((v) => removeUnits(v));
 
   const _value = value.includes('px')
@@ -30,4 +30,4 @@ function getProximateKey(valueHash, value) {
   return values[idx] > 0 ? `${values[idx]}rem` : '0';
 }
 
-module.exports = getProximateKey;
+module.exports = getClosestKey;
