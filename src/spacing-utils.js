@@ -1,8 +1,7 @@
 'use strict';
 
 const TAILWIND_CLASSES = require('./constants');
-
-const getClosestKey = require('./getClosestKey');
+const convertPxtoRem = require('./convertPxtoRem');
 
 const spacingProps = {
   margin: {
@@ -19,15 +18,54 @@ const spacingProps = {
   },
 };
 
+const spacingMapping = {
+  margin: 'm',
+  'margin-left': 'ml',
+  'margin-right': 'mr',
+  'margin-top': 'mt',
+  'margin-bottom': 'mb',
+  padding: 'p',
+  'padding-left': 'pl',
+  'padding-right': 'pr',
+  'padding-top': 'pt',
+  'padding-bottom': 'pb',
+};
+
 const getSizeClass = (propertyName, currentValue) => {
-  const isNegative = currentValue.startsWith('-');
-  const positiveValue = isNegative ? currentValue.substring(1) : currentValue;
+  const currentValueString = `${currentValue}`;
+  const value = currentValueString.startsWith('.')
+    ? currentValueString.replace('.', '0.')
+    : currentValueString;
+  const isNegative = value.startsWith('-');
+  const positiveValue = isNegative ? value.substring(1) : value;
 
   const hash = TAILWIND_CLASSES[propertyName];
-  const closestValidValue = getClosestKey(hash, positiveValue);
-  const positiveOutputValue = hash[positiveValue] || hash[closestValidValue];
 
-  return isNegative ? `-${positiveOutputValue}` : positiveOutputValue;
+  const positiveRemValue = positiveValue.includes('px')
+    ? convertPxtoRem(positiveValue)
+    : null;
+
+  const positiveOutputValue = hash[positiveValue] || hash[positiveRemValue];
+
+  if (positiveOutputValue) {
+    // If a matching value is found then return it, prefixed with minus sign if
+    // necessary
+    return isNegative ? `-${positiveOutputValue}` : positiveOutputValue;
+  }
+
+  // If no matching value is found then return the original value using an
+  // arbitary value
+  const arbitraryClass = `${spacingMapping[propertyName]}-[${value.replace(
+    ' ',
+    '_'
+  )}]`;
+  return arbitraryClass;
+};
+
+const replaceIfNotArbitraryValue = (value, original, replacement) => {
+  if (value.includes('[')) return value;
+
+  return value.replace(original, replacement);
 };
 
 function getSpacingUtils(decl) {
@@ -50,7 +88,10 @@ function getSpacingUtils(decl) {
     const px = getSizeClass(spacingProps[propName].left, leftRight);
     const py = getSizeClass(spacingProps[propName].top, topBottom);
 
-    output = px.replace('l', 'x') + ' ' + py.replace('t', 'y');
+    output =
+      replaceIfNotArbitraryValue(px, 'l', 'x') +
+      ' ' +
+      replaceIfNotArbitraryValue(py, 't', 'y');
   }
 
   // padding: top leftRight bottom;
@@ -61,7 +102,7 @@ function getSpacingUtils(decl) {
     const px = getSizeClass(spacingProps[propName].left, leftRight);
     const pb = getSizeClass(spacingProps[propName].bottom, bottom);
 
-    output = pt + ' ' + px.replace('l', 'x') + ' ' + pb;
+    output = pt + ' ' + replaceIfNotArbitraryValue(px, 'l', 'x') + ' ' + pb;
   }
 
   // padding: top right bottom left;
