@@ -8,6 +8,7 @@ const { getBorderUtils, getBorderColorUtils } = require('./border-utils');
 const getBorderRadiusUtils = require('./border-radius-utils');
 const getColorUtils = require('./color-utils');
 const getArbitraryClass = require('./getArbitraryClass');
+const prefixMap = require('./prefixMap');
 
 // These CSS properties are not currently supported by Tailwind. Any CSS
 // properties added to this array will be converted to an arbitrary class, such
@@ -154,43 +155,10 @@ function getTailwindUtils(incomingDecl) {
     return prop[decl.value] || '';
   }
 
-  const propMap = {
-    'min-height': 'min-h',
-    'min-width': 'min-w',
-    'max-height': 'max-h',
-    'max-width': 'max-w',
-    width: 'w',
-    height: 'h',
-    transition: 'transition',
-    'z-index': 'z',
-    transform: 'transform',
-    'letter-spacing': 'tracking',
-    'line-height': 'leading',
-    'font-size': 'text',
-    top: 'top',
-    left: 'left',
-    right: 'right',
-    bottom: 'bottom',
-    gap: 'gap',
-    stroke: 'stroke',
-    fill: 'fill',
-    'grid-template-columns': 'grid-cols',
-    'grid-template-rows': 'grid-rows',
-    flex: 'flex',
-    'box-shadow': 'shadow',
-    'flex-basis': 'basis',
-  };
-
   if (prop && prop[val]) {
     return prop[val] || '';
-  } else if (Object.keys(propMap).includes(decl.prop)) {
-    return getArbitraryClass(
-      {
-        ...decl,
-        prop: propMap[decl.prop],
-      },
-      true
-    );
+  } else if (Object.keys(prefixMap).includes(decl.prop)) {
+    return getArbitraryClass(decl);
   } else if (prop) {
     return getUnknownClass(decl.prop, val);
   }

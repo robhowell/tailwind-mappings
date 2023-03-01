@@ -65,92 +65,14 @@ function deltaRgb(rgb1, rgb2) {
   return Math.sqrt(2 * drp2 + 4 * dgp2 + 3 * dbp2 + (t * (drp2 - dbp2)) / 256);
 }
 
-const stripDefault = (string) => {
-  return string.replace('-DEFAULT', '');
-};
-
-function getClosestColor(decl) {
-  const twColors = Object.keys(colors)
-    .map((c) => {
-      const shades = colors[c];
-
-      if (typeof shades === 'object') {
-        const palette = Object.keys(shades).map((s) => {
-          return {
-            'background-color': stripDefault(`bg-${c}-${s}`),
-            background: stripDefault(`bg-${c}-${s}`),
-            color: stripDefault(`text-${c}-${s}`),
-            border: stripDefault(`border-${c}-${s}`),
-            'border-color': stripDefault(`border-${c}-${s}`),
-            hex: shades[s],
-          };
-        });
-
-        return palette;
-      }
-
-      const s = shades;
-
-      return {
-        'background-color': stripDefault(`bg-${c}-${s}`),
-        background: stripDefault(`bg-${c}-${s}`),
-        color: stripDefault(`text-${c}-${s}`),
-        border: stripDefault(`border-${c}-${s}`),
-        'border-color': stripDefault(`border-${c}-${s}`),
-        hex: s,
-      };
-    })
-    .flat();
-
-  if (decl.value === 'transparent') {
-    return twColors.find((item) => item.hex === 'transparent')[decl.prop];
-  }
-
-  if (decl.value === 'unset') {
-    return twColors.find((item) => item.hex === 'unset')[decl.prop];
-  }
-
-  if (decl.value === 'initial') {
-    return twColors.find((item) => item.hex === 'initial')[decl.prop];
-  }
-
-  const sorted = twColors
-    .filter(
-      (item) =>
-        item.hex !== 'transparent' &&
-        item.hex !== 'unset' &&
-        item.hex !== 'initial'
-    )
-    .map((c) => {
-      let _val = decl.value;
-      if (decl.prop === 'border') {
-        const borderValues = decl.value.split(' ');
-        if (borderValues.length > 2) {
-          const [, , ...colorValues] = borderValues;
-          _val = colorValues.join('');
-        }
-      }
-      _val = _val.replace(' !important', '');
-
-      const diff = deltaRgb(chroma(_val).rgb(), chroma(c.hex).rgb());
-      return { ...c, diff };
-    })
-    .sort((a, b) => a.diff - b.diff);
-
-  return sorted[0][decl.prop];
-}
-
 function getColorUtils(decl) {
-  // TODO: Add support for linear-gradients, or throw an error
   if (decl.value.includes('linear-gradient') || decl.value.includes('url')) {
     return getArbitraryClass(decl);
   }
 
   const hash = TAILWIND_CLASSES[decl.prop];
 
-  return hash
-    ? hash[decl.value] || getClosestColor(decl)
-    : getClosestColor(decl);
+  return (hash && hash[decl.value]) || getArbitraryClass(decl);
 }
 
 module.exports = getColorUtils;

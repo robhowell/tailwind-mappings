@@ -69,6 +69,7 @@ const TAILWIND_CLASSES = {
     '#eaf3f4': 'bg-brand-lighter',
     '#f2f8f9': 'bg-brand-lightest',
     '#ffffff': 'bg-white',
+    '#fff': 'bg-white',
     'rgba(255, 255, 255, 0.6)': 'bg-whiteOverlay',
     '#000000': 'bg-black',
     'rgba(0, 0, 0, 0.6)': 'bg-blackOverlay',
