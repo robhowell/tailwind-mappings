@@ -1073,6 +1073,7 @@ const TAILWIND_CLASSES = {
     '7rem': 'm-28',
     '8rem': 'm-32',
     '9rem': 'm-36',
+    auto: 'm-auto',
   },
   'margin-bottom': {
     0: 'mb-0',
@@ -1111,6 +1112,7 @@ const TAILWIND_CLASSES = {
     '7rem': 'mb-28',
     '8rem': 'mb-32',
     '9rem': 'mb-36',
+    auto: 'mb-auto',
   },
   'margin-left': {
     0: 'ml-0',
@@ -1149,6 +1151,7 @@ const TAILWIND_CLASSES = {
     '7rem': 'ml-28',
     '8rem': 'ml-32',
     '9rem': 'ml-36',
+    auto: 'ml-auto',
   },
   'margin-right': {
     0: 'mr-0',
@@ -1187,6 +1190,7 @@ const TAILWIND_CLASSES = {
     '7rem': 'mr-28',
     '8rem': 'mr-32',
     '9rem': 'mr-36',
+    auto: 'mr-auto',
   },
   'margin-top': {
     0: 'mt-0',
@@ -1225,6 +1229,7 @@ const TAILWIND_CLASSES = {
     '7rem': 'mt-28',
     '8rem': 'mt-32',
     '9rem': 'mt-36',
+    auto: 'mt-auto',
   },
   'max-height': {
     '0px': 'max-h-0',
