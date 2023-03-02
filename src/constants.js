@@ -934,6 +934,7 @@ const TAILWIND_CLASSES = {
     '50%': 'h-1/2',
     '66.666667%': 'h-2/3',
     '75%': 'h-3/4',
+    '1.25rem': 'h-5',
     auto: 'h-auto',
   },
   isolation: {
@@ -1263,11 +1264,13 @@ const TAILWIND_CLASSES = {
     none: 'max-w-none',
   },
   'min-height': {
+    0: 'min-h-0',
     '0px': 'min-h-0',
     '100%': 'min-h-full',
     '100vh': 'min-h-screen',
   },
   'min-width': {
+    0: 'min-w-0',
     '0px': 'min-w-0',
     '100%': 'min-w-full',
     'max-content': 'min-w-max',
