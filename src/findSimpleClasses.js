@@ -24,10 +24,28 @@ const findSimpleClasses = (css) => {
         selector.startsWith('.') && [...selector.matchAll(/\./g)].length === 1
     ); // Only support class-based selectors, that specify one class (i.e. do not support .Cta.Cta--primary)
 
-  const selectorsUsedOnce = nonNestedSelectors.filter(
-    (selector) =>
-      selectors.filter((s) => s.split(' ').includes(selector)).length === 1
-  );
+  // Only include selectors that are not specified in other sepectors that are nested, descendent or feature pseudo-selectors
+  const selectorsUsedOnce = nonNestedSelectors.filter((selector) => {
+    const allSelectorsThatIncludeThisClass = selectors.filter((s) => {
+      const partsOfSelector = s.split(' ');
+      const partsWithoutPseudoSelectors = partsOfSelector.map((s) => {
+        return s.split(':')[0];
+      });
+
+      return partsWithoutPseudoSelectors.includes(selector);
+    });
+
+    const areAnyOfTheseSelectorsComplex = allSelectorsThatIncludeThisClass.some(
+      (s) =>
+        s.includes(' ') ||
+        s.includes('>') ||
+        s.includes(':') ||
+        !s.startsWith('.') ||
+        ![...s.matchAll(/\./g)].length === 1
+    );
+
+    return !areAnyOfTheseSelectorsComplex;
+  });
 
   return selectorsUsedOnce;
 };
