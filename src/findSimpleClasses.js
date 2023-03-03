@@ -19,11 +19,14 @@ const findSimpleClasses = (css) => {
     .filter((selector) => !selector.includes(' ')) // Strip nested rules
     .filter((selector) => !selector.includes('>')) // Stripe descendant rules
     .filter((selector) => !selector.includes(':')) // Strip pseudo-selectors
-    .filter((selector) => !selector.includes('___')) // Strip react-carousel classes
-    .filter((selector) => [...selector.matchAll(/\./g)].length === 1); // Strip complex classes (e.g. .Button.Button--primary)
+    .filter(
+      (selector) =>
+        selector.startsWith('.') && [...selector.matchAll(/\./g)].length === 1
+    ); // Only support class-based selectors, that specify one class (i.e. do not support .Cta.Cta--primary)
 
   const selectorsUsedOnce = nonNestedSelectors.filter(
-    (selector) => selectors.filter((s) => s.includes(selector)).length === 1
+    (selector) =>
+      selectors.filter((s) => s.split(' ').includes(selector)).length === 1
   );
 
   return selectorsUsedOnce;
