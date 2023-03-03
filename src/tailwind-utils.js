@@ -115,6 +115,10 @@ function getTailwindUtils(incomingDecl) {
       'padding-right',
       'padding-top',
       'padding-bottom',
+      'left',
+      'right',
+      'top',
+      'bottom',
     ].includes(decl.prop)
   ) {
     return getSpacingUtils(decl, decl.prop);
