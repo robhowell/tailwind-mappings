@@ -19,6 +19,11 @@ const findSimpleClasses = (css) => {
     }
   });
 
+  console.log(
+    'Total number of selectors in CSS for website:',
+    selectors.length
+  );
+
   // Extract classes from each selector
   const selectorsWithClasses = selectors.map((selector) => ({
     selector,
@@ -46,7 +51,21 @@ const findSimpleClasses = (css) => {
 
   const simpleClasses = simpleSelectors.map((item) => item.selector);
 
-  return simpleClasses;
+  console.log(
+    'Total number of simple selectors that can be automatically converted:',
+    simpleClasses.length
+  );
+
+  const uniqueSimpleClasses = [...new Set(simpleClasses)];
+
+  console.log(
+    'Total number of unique simple classes that can be automatically converted:',
+    uniqueSimpleClasses.length
+  );
+
+  console.log('Unique simple classes:', uniqueSimpleClasses);
+
+  return uniqueSimpleClasses;
 };
 
 module.exports = findSimpleClasses;
