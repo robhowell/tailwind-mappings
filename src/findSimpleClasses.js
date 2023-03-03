@@ -1,8 +1,12 @@
 const csstree = require('css-tree');
 
-// This function finds simple classes in the provided CSS: classes which are
-// not nested (i.e. not inside of an @rule) and have no other classes in the
-// selector and are not used more than once.
+const getClassesInSelector = require('./getClassesInSelector');
+
+// This function finds simple class-based selectors in the provided CSS. Simple
+// selectors should include only one class, and that class should match the
+// selector exactly. This will exclude nested selectors (e.g.
+// ".Cta .Cta__text"), selectors that include pseudo-selectors (e.g.
+// ".Cta:hover") and descendent selectors (e.g. ".Cta > .Cta__text").
 const findSimpleClasses = (css) => {
   const ast = csstree.parse(css);
 
@@ -15,39 +19,34 @@ const findSimpleClasses = (css) => {
     }
   });
 
-  const nonNestedSelectors = selectors
-    .filter((selector) => !selector.includes(' ')) // Strip nested rules
-    .filter((selector) => !selector.includes('>')) // Stripe descendant rules
-    .filter((selector) => !selector.includes(':')) // Strip pseudo-selectors
-    .filter(
-      (selector) =>
-        selector.startsWith('.') && [...selector.matchAll(/\./g)].length === 1
-    ); // Only support class-based selectors, that specify one class (i.e. do not support .Cta.Cta--primary)
+  // Extract classes from each selector
+  const selectorsWithClasses = selectors.map((selector) => ({
+    selector,
+    classes: getClassesInSelector(selector),
+  }));
 
-  // Only include selectors that are not specified in other sepectors that are nested, descendent or feature pseudo-selectors
-  const selectorsUsedOnce = nonNestedSelectors.filter((selector) => {
-    const allSelectorsThatIncludeThisClass = selectors.filter((s) => {
-      const partsOfSelector = s.split(' ');
-      const partsWithoutPseudoSelectors = partsOfSelector.map((s) => {
-        return s.split(':')[0];
-      });
+  // Only include selectors that have exactly one class
+  const selectorsWithOneClass = selectorsWithClasses.filter(
+    (item) => item.classes.length === 1 && item.selector === item.classes[0]
+  );
 
-      return partsWithoutPseudoSelectors.includes(selector);
+  const simpleSelectors =
+    // Exclude any classes if they are also used within complex selectors
+    selectorsWithOneClass.filter((item) => {
+      const { selector: classForSelector } = item;
+      const otherSelectorsWithThisClass = selectorsWithClasses.filter(
+        (otherItem) => otherItem.classes.includes(classForSelector)
+      );
+
+      return otherSelectorsWithThisClass.every(
+        (otherItem) =>
+          otherItem.classes.length === 1 && item.selector === item.classes[0]
+      );
     });
 
-    const areAnyOfTheseSelectorsComplex = allSelectorsThatIncludeThisClass.some(
-      (s) =>
-        s.includes(' ') ||
-        s.includes('>') ||
-        s.includes(':') ||
-        !s.startsWith('.') ||
-        ![...s.matchAll(/\./g)].length === 1
-    );
+  const simpleClasses = simpleSelectors.map((item) => item.selector);
 
-    return !areAnyOfTheseSelectorsComplex;
-  });
-
-  return selectorsUsedOnce;
+  return simpleClasses;
 };
 
 module.exports = findSimpleClasses;
