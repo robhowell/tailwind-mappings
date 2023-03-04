@@ -14,7 +14,74 @@ const findSimpleClasses = (css) => {
 
   csstree.walk(ast, function nodeFunction(node) {
     if (node.type === 'Selector') {
+      const atRule = this.atrule;
+
+      let prefixes = [];
+
+      // Call this.function recursively to find any instances of
+      // PseudoClassSelector and PseudoElementSelector - collect the names and
+      // then return an array of them.
+
+      // if (this.function) {
+      //   console.log('this.function', this.function);
+      // }
+
+      if (atRule) {
+        const mediaQueryNode = atRule.prelude.children?.first?.children?.first;
+
+        if (mediaQueryNode) {
+          // prefixes.push(child.name);
+
+          // Should add condition here to check if there is only one child
+          // and it is a min-width media query with one of the valid
+          // values for value and unit of px, otherwise we will treat it
+          // as an arbitrary class.
+          if (
+            mediaQueryNode.children &&
+            mediaQueryNode.children.size === 1 &&
+            mediaQueryNode.children.first.type === 'MediaFeature' &&
+            (mediaQueryNode.children.first.value?.value === '767' ||
+              mediaQueryNode.children.first.value?.value === '768') &&
+            mediaQueryNode.children.first.value?.unit === 'px'
+          ) {
+            if (
+              mediaQueryNode.children.first.value?.value === '767' ||
+              mediaQueryNode.children.first.value?.value === '768'
+            ) {
+              // console.log('MediaFeature', mediaFeatureChild);
+              prefixes.push('sm');
+            } else {
+              // console.log('Unsupported media query', mediaQueryNode);
+            }
+          } else {
+            // console.log('Unsupported media query', mediaQueryNode);
+          }
+        }
+      }
+
+      if (prefixes.length > 0) {
+        console.log('prefixes', prefixes);
+      }
+
+      // TODO: Add support for @media queries
+      // sm:m-1
+
+      // TODO: Add support for non-standard @media queries such as @media (min-width: 768px) and @media (max-width: 1024px):
+      // [@media(any-hover:hover)]:m-1
+
+      // TODO: Add support for pseudo selectors
+      // hover:m-1
+
+      // TODO: Add support for pseudo elements
+      // before:m-1
+
+      // TODO: Optional extra because only use it once: add support for
+      // @supports queries, but it is literally just used once
+
       const selectorString = csstree.generate(node);
+
+      // TODO: Update this to add prefixes to the selector string, by returning
+      // an object instead of a string
       selectors.push(selectorString);
     }
   });
