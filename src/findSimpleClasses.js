@@ -97,9 +97,12 @@ const findSimpleClasses = (css) => {
     classes: getClassesInSelector(selector),
   }));
 
+  const classWithModifierRegex = /\.[a-zA-Z-_0-9]+(:[a-z\-]+)*/g;
+
   // Only include selectors that have exactly one class
   const selectorsWithOneClass = selectorsWithClasses.filter(
-    (item) => item.classes.length === 1 && item.selector === item.classes[0]
+    (item) =>
+      item.classes.length === 1 && !!item.selector.match(classWithModifierRegex)
   );
 
   const simpleSelectors =
@@ -112,7 +115,8 @@ const findSimpleClasses = (css) => {
 
       return otherSelectorsWithThisClass.every(
         (otherItem) =>
-          otherItem.classes.length === 1 && item.selector === item.classes[0]
+          otherItem.classes.length === 1 &&
+          !!item.selector.match(classWithModifierRegex)
       );
     });
 
