@@ -63,9 +63,13 @@ const findSimpleClasses = (css) => {
     uniqueSimpleClasses.length
   );
 
+  // Uncomment to see the list of simple classes found
   console.log('Unique simple classes:', uniqueSimpleClasses);
 
   return uniqueSimpleClasses;
 };
 
 module.exports = findSimpleClasses;
+
+// Regex to find simple classes with modifier suffixes such as :hover
+// /\.[a-zA-Z-_0-9]+(:[a-z\-]+)+/g
