@@ -1,6 +1,7 @@
 const csstree = require('css-tree');
 
 const getClassesInSelector = require('./getClassesInSelector');
+const getMediaQueryPrefixesForAtRule = require('./getMediaQueryPrefixesForAtRule');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
 // selectors should include only one class, and that class should match the
@@ -26,40 +27,9 @@ const findSimpleClasses = (css) => {
       //   console.log('this.function', this.function);
       // }
 
-      if (atRule) {
-        const mediaQueryNode = atRule.prelude.children?.first?.children?.first;
+      const mediaQueryClasses = getMediaQueryPrefixesForAtRule(atRule);
 
-        if (mediaQueryNode) {
-          // Ignore "screen" and "and" in media query, they are not necesssary.
-
-          // prefixes.push(child.name);
-
-          // Should add condition here to check if there is only one child
-          // and it is a min-width media query with one of the valid
-          // values for value and unit of px, otherwise we will treat it
-          // as an arbitrary class.
-          if (
-            mediaQueryNode.children &&
-            mediaQueryNode.children.size === 1 &&
-            mediaQueryNode.children.first.type === 'MediaFeature' &&
-            (mediaQueryNode.children.first.value?.value === '767' ||
-              mediaQueryNode.children.first.value?.value === '768') &&
-            mediaQueryNode.children.first.value?.unit === 'px'
-          ) {
-            if (
-              mediaQueryNode.children.first.value?.value === '767' ||
-              mediaQueryNode.children.first.value?.value === '768'
-            ) {
-              // console.log('MediaFeature', mediaFeatureChild);
-              prefixes.push('sm');
-            } else {
-              // console.log('Unsupported media query', mediaQueryNode);
-            }
-          } else {
-            // console.log('Unsupported media query', mediaQueryNode);
-          }
-        }
-      }
+      prefixes = [...prefixes, ...mediaQueryClasses];
 
       if (prefixes.length > 0) {
         console.log('prefixes', prefixes);
