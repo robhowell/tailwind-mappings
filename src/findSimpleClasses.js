@@ -35,20 +35,15 @@ const findSimpleClasses = (css) => {
         console.log('prefixes', prefixes);
       }
 
-      // TODO: Add support for @media queries
-      // sm:m-1
-
-      // TODO: Add support for non-standard @media queries such as @media (min-width: 768px) and @media (max-width: 1024px):
-      // [@media(any-hover:hover)]:m-1
+      // If "[@media(hover:hover)]" and "hover" are both in the prefixes array,
+      // then remove "[@media(hover:hover)]" from the array because it is
+      // redundant in Tailwind CSS.
 
       // TODO: Add support for pseudo selectors
       // hover:m-1
 
       // TODO: Add support for pseudo elements
       // before:m-1
-
-      // TODO: Optional extra because only use it once: add support for
-      // @supports queries, but it is literally just used once
 
       const selectorString = csstree.generate(node);
 
