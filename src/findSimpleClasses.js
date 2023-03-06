@@ -30,6 +30,8 @@ const findSimpleClasses = (css) => {
         const mediaQueryNode = atRule.prelude.children?.first?.children?.first;
 
         if (mediaQueryNode) {
+          // Ignore "screen" and "and" in media query, they are not necesssary.
+
           // prefixes.push(child.name);
 
           // Should add condition here to check if there is only one child
