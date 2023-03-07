@@ -67,8 +67,6 @@ const getMediaQueryPrefixesForAtRule = (atRule) => {
     .filter((item) => !!item);
 
   return prefixes;
-
-  return [];
 };
 
 module.exports = getMediaQueryPrefixesForAtRule;

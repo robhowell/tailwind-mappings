@@ -2,6 +2,7 @@ const csstree = require('css-tree');
 
 const getClassesInSelector = require('./getClassesInSelector');
 const getMediaQueryPrefixesForAtRule = require('./getMediaQueryPrefixesForAtRule');
+const removeDuplicates = require('./removeDuplicates');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
 // selectors should include only one class, and that class should match the
@@ -17,8 +18,6 @@ const findSimpleClasses = (css) => {
     if (node.type === 'Selector') {
       const atRule = this.atrule;
 
-      let prefixes = [];
-
       // Call this.function recursively to find any instances of
       // PseudoClassSelector and PseudoElementSelector - collect the names and
       // then return an array of them.
@@ -29,11 +28,7 @@ const findSimpleClasses = (css) => {
 
       const mediaQueryClasses = getMediaQueryPrefixesForAtRule(atRule);
 
-      prefixes = [...prefixes, ...mediaQueryClasses];
-
-      if (prefixes.length > 0) {
-        console.log('prefixes', prefixes);
-      }
+      const prefixes = [...mediaQueryClasses];
 
       // If "[@media(hover:hover)]" and "hover" are both in the prefixes array,
       // then remove "[@media(hover:hover)]" from the array because it is
@@ -47,9 +42,21 @@ const findSimpleClasses = (css) => {
 
       const selectorString = csstree.generate(node);
 
-      // TODO: Update this to add prefixes to the selector string, by returning
-      // an object instead of a string
-      selectors.push(selectorString);
+      const prefix = removeDuplicates(prefixes)
+        .sort()
+        .map((item) => `[${item}]:`)
+        .join('');
+
+      const selectorWithPrefix = {
+        selector: selectorString,
+        prefix,
+      };
+
+      if (selectorWithPrefix.prefix) {
+        console.log('selectorWithPrefix', selectorWithPrefix);
+      }
+
+      selectors.push(selectorWithPrefix);
     }
   });
 
@@ -59,9 +66,10 @@ const findSimpleClasses = (css) => {
   );
 
   // Extract classes from each selector
-  const selectorsWithClasses = selectors.map((selector) => ({
-    selector,
+  const selectorsWithClasses = selectors.map(({ selector, prefix }) => ({
     classes: getClassesInSelector(selector),
+    prefix,
+    selector,
   }));
 
   const classWithModifierRegex = /\.[a-zA-Z-_0-9]+(:[a-z\-]+)*/g;
