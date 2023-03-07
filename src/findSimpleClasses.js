@@ -1,8 +1,9 @@
 const csstree = require('css-tree');
 
-const getClassesInSelector = require('./getClassesInSelector');
+const getSubSelectors = require('./getSubSelectors');
 const getMediaQueryPrefixesForAtRule = require('./getMediaQueryPrefixesForAtRule');
 const removeDuplicates = require('./removeDuplicates');
+const { uniq } = require('lodash');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
 // selectors should include only one class, and that class should match the
@@ -12,7 +13,7 @@ const removeDuplicates = require('./removeDuplicates');
 const findSimpleClasses = (css) => {
   const ast = csstree.parse(css);
 
-  let selectors = [];
+  let selectorsWithPrefixes = [];
 
   csstree.walk(ast, function nodeFunction(node) {
     if (node.type === 'Selector') {
@@ -28,6 +29,7 @@ const findSimpleClasses = (css) => {
 
       const mediaQueryClasses = getMediaQueryPrefixesForAtRule(atRule);
 
+      // TODO: Also spread pseudo selectors & elements into the prefixes array
       const prefixes = [...mediaQueryClasses];
 
       // If "[@media(hover:hover)]" and "hover" are both in the prefixes array,
@@ -40,7 +42,7 @@ const findSimpleClasses = (css) => {
       // TODO: Add support for pseudo elements
       // before:m-1
 
-      const selectorString = csstree.generate(node);
+      const fullSelector = csstree.generate(node);
 
       const prefix = removeDuplicates(prefixes)
         .sort()
@@ -48,71 +50,99 @@ const findSimpleClasses = (css) => {
         .join('');
 
       const selectorWithPrefix = {
-        selector: selectorString,
+        fullSelector,
         prefix,
       };
 
-      if (selectorWithPrefix.prefix) {
-        console.log('selectorWithPrefix', selectorWithPrefix);
-      }
+      // if (selectorWithPrefix.prefix) {
+      //   console.log('selectorWithPrefix', selectorWithPrefix);
+      // }
 
-      selectors.push(selectorWithPrefix);
+      selectorsWithPrefixes.push(selectorWithPrefix);
     }
   });
 
   console.log(
     'Total number of selectors in CSS for website:',
-    selectors.length
+    selectorsWithPrefixes.length
   );
 
   // Extract classes from each selector
-  const selectorsWithClasses = selectors.map(({ selector, prefix }) => ({
-    classes: getClassesInSelector(selector),
-    prefix,
-    selector,
-  }));
+  const selectorsWithSubSelectors = selectorsWithPrefixes.map(
+    ({ fullSelector, prefix }) => {
+      const selectors = getSubSelectors(fullSelector);
 
-  const classWithModifierRegex = /\.[a-zA-Z-_0-9]+(:[a-z\-]+)*/g;
+      // Create array of class selectors (e.g. ".Cta:hover") and remove any
+      // pseudo selectors (e.g. ":hover") or pseudo elements (e.g. "::before")
+      const classes = selectors
+        .filter((item) => item.startsWith('.'))
+        .map((className) => className.split(':')[0]);
+
+      return {
+        classes,
+        fullSelector,
+        prefix,
+        selectors,
+      };
+    }
+  );
 
   // Only include selectors that have exactly one class
-  const selectorsWithOneClass = selectorsWithClasses.filter(
-    (item) =>
-      item.classes.length === 1 && !!item.selector.match(classWithModifierRegex)
+  const selectorsWithOneClass = selectorsWithSubSelectors
+    .filter(
+      ({ selectors }) => selectors.length === 1 && selectors[0].startsWith('.')
+    )
+    .map((item) => ({
+      ...item,
+      className: item.classes[0],
+    }));
+
+  console.log(
+    'Total number of selectors with just one class',
+    selectorsWithOneClass.length
   );
 
   const simpleSelectors =
     // Exclude any classes if they are also used within complex selectors
     selectorsWithOneClass.filter((item) => {
-      const { selector: classForSelector } = item;
-      const otherSelectorsWithThisClass = selectorsWithClasses.filter(
-        (otherItem) => otherItem.classes.includes(classForSelector)
+      const { className } = item;
+
+      const otherSelectorsWithThisClass = selectorsWithSubSelectors.filter(
+        (otherItem) => otherItem.classes.includes(className)
       );
 
       return otherSelectorsWithThisClass.every(
-        (otherItem) =>
-          otherItem.classes.length === 1 &&
-          !!item.selector.match(classWithModifierRegex)
+        (otherItem) => otherItem.selectors.length === 1
       );
     });
 
-  const simpleClasses = simpleSelectors.map((item) => item.selector);
-
   console.log(
     'Total number of simple selectors that can be automatically converted:',
-    simpleClasses.length
+    simpleSelectors.length
   );
 
-  const uniqueSimpleClasses = [...new Set(simpleClasses)];
+  const uniqueSimpleSelectors = uniq(
+    simpleSelectors,
+    ({ className, prefix }) => `${prefix}${className}`
+  );
 
   console.log(
     'Total number of unique simple classes that can be automatically converted:',
-    uniqueSimpleClasses.length
+    uniqueSimpleSelectors.length
   );
 
   // Uncomment to see the list of simple classes found
-  console.log('Unique simple classes:', uniqueSimpleClasses);
+  console.log(
+    'Unique simple selectors:',
+    uniqueSimpleSelectors.map(({ className, prefix }) => ({
+      className,
+      prefix,
+    }))
+  );
 
-  return uniqueSimpleClasses;
+  // TODO: Return array of objects instead of array of strings
+
+  return uniqueSimpleSelectors.map(({ className }) => className);
 };
 
 module.exports = findSimpleClasses;
