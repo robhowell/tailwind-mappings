@@ -44,7 +44,7 @@ const findSimpleClasses = (css) => {
 
       const prefix = removeDuplicates(prefixes)
         .sort()
-        .map((item) => `[${item}]:`)
+        .map((item) => `${item}:`)
         .join('');
 
       const selectorWithPrefix = {
