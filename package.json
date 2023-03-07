@@ -37,6 +37,7 @@
     "chroma-js": "^2.1.2",
     "css-tree": "^2.1.0",
     "debug": "^4.3.1",
+    "lodash": "^4.17.21",
     "tailwindcss": "^3.1.7"
   },
   "engines": {
