@@ -1,9 +1,10 @@
 const csstree = require('css-tree');
 
-const getSubSelectors = require('./getSubSelectors');
-const getMediaQueryPrefixesForAtRule = require('./getMediaQueryPrefixesForAtRule');
-const removeDuplicates = require('./removeDuplicates');
 const { uniq } = require('lodash');
+const getMediaQueryPrefixesForAtRule = require('./getMediaQueryPrefixesForAtRule');
+const getPseudoVariantPrefix = require('./getPseudoVariantPrefix');
+const getSubSelectors = require('./getSubSelectors');
+const removeDuplicates = require('./removeDuplicates');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
 // selectors should include only one class, and that class should match the
@@ -102,9 +103,14 @@ const findSimpleClasses = (css) => {
     selectorsWithOneClass.length
   );
 
+  const selectorsWithPseudoVariants = selectorsWithOneClass.map((item) => ({
+    ...item,
+    prefix: `${item.prefix}${getPseudoVariantPrefix(item.fullSelector)}`,
+  }));
+
   const simpleSelectors =
     // Exclude any classes if they are also used within complex selectors
-    selectorsWithOneClass.filter((item) => {
+    selectorsWithPseudoVariants.filter((item) => {
       const { className } = item;
 
       const otherSelectorsWithThisClass = selectorsWithSubSelectors.filter(
@@ -133,16 +139,18 @@ const findSimpleClasses = (css) => {
 
   // Uncomment to see the list of simple classes found
   console.log(
-    'Unique simple selectors:',
-    uniqueSimpleSelectors.map(({ className, prefix }) => ({
-      className,
-      prefix,
-    }))
+    'Unique simple selectors with prefixes:',
+    uniqueSimpleSelectors
+      .filter(({ prefix }) => !!prefix)
+      .map(({ fullSelector, prefix }) => ({
+        fullSelector,
+        prefix,
+      }))
   );
 
   // TODO: Return array of objects instead of array of strings
 
-  return uniqueSimpleSelectors.map(({ className }) => className);
+  return uniqueSimpleSelectors.map(({ fullSelector }) => fullSelector);
 };
 
 module.exports = findSimpleClasses;
