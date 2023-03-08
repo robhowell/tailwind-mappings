@@ -44,7 +44,7 @@ const findSimpleClasses = (css) => {
       // TODO: Add support for pseudo elements
       // before:m-1
 
-      const fullSelector = csstree.generate(node);
+      const inputSelector = csstree.generate(node);
 
       const prefix = removeDuplicates(prefixes)
         .sort()
@@ -52,7 +52,7 @@ const findSimpleClasses = (css) => {
         .join('');
 
       const selectorWithPrefix = {
-        fullSelector,
+        inputSelector,
         prefix,
       };
 
@@ -71,16 +71,16 @@ const findSimpleClasses = (css) => {
 
   // Extract classes from each selector
   const selectorsWithSubSelectors = selectorsWithPrefixes.map(
-    ({ fullSelector, prefix }) => {
+    ({ inputSelector, prefix }) => {
       // Get all sub-selectors, e.g. ".Cta .VisuallyHidden:not(:focus):not
       // (:active)" becomes [".Cta", ".VisuallyHidden:not(:focus):not(:active)"]
-      const selectors = getSubSelectors(fullSelector);
+      const selectors = getSubSelectors(inputSelector);
       // Get all classes, e.g. ".Cta .VisuallyHidden:not(:focus):not(:active)" becomes [".Cta", ".VisuallyHidden"]
-      const classes = getClassesFromSelector(fullSelector);
+      const classes = getClassesFromSelector(inputSelector);
 
       return {
         classes,
-        fullSelector,
+        inputSelector,
         prefix,
         selectors,
       };
@@ -103,7 +103,7 @@ const findSimpleClasses = (css) => {
 
   const selectorsWithPseudoVariants = selectorsWithOneClass.map((item) => ({
     ...item,
-    prefix: `${item.prefix}${getPseudoVariantPrefix(item.fullSelector)}`,
+    prefix: `${item.prefix}${getPseudoVariantPrefix(item.inputSelector)}`,
   }));
 
   const simpleSelectors =
@@ -140,8 +140,8 @@ const findSimpleClasses = (css) => {
   //   'Unique simple selectors with prefixes:',
   //   uniqueSimpleSelectors
   //     .filter(({ prefix }) => !!prefix)
-  //     .map(({ fullSelector, prefix }) => ({
-  //       fullSelector,
+  //     .map(({ inputSelector, prefix }) => ({
+  //       inputSelector,
   //       prefix,
   //     }))
   // );
@@ -153,8 +153,8 @@ const findSimpleClasses = (css) => {
       // TODO: Remove this filter once support for more complex selectors is
       // added, e.g. ".Cta span"
       .filter(
-        ({ fullSelector }) =>
-          !fullSelector.includes(' ') && !fullSelector.includes('>')
+        ({ inputSelector }) =>
+          !inputSelector.includes(' ') && !inputSelector.includes('>')
       )
   );
 };

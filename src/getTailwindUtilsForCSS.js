@@ -29,6 +29,8 @@ const getTailwindUtilsForCSS = (css) => {
 
       const currentNodeClasses = {
         selector: selectorString,
+        // TODO: Add support for prefixes here, because we can't match the
+        // results of this function with the other results otherwise.
         classes: [
           ...textClassesForSelector,
           ...tailwindClassesForSelector,
