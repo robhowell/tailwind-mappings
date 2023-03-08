@@ -148,7 +148,16 @@ const findSimpleClasses = (css) => {
 
   // TODO: Return array of objects instead of array of strings
 
-  return uniqueSimpleSelectors.map(({ fullSelector }) => fullSelector);
+  return (
+    uniqueSimpleSelectors
+      // TODO: Remove this filter once support for more complex selectors is
+      // added, e.g. ".Cta span"
+      .filter(
+        ({ fullSelector }) =>
+          !fullSelector.includes(' ') && !fullSelector.includes('>')
+      )
+      .map(({ fullSelector }) => fullSelector)
+  );
 };
 
 module.exports = findSimpleClasses;
