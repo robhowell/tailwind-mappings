@@ -136,15 +136,15 @@ const findSimpleClasses = (css) => {
   );
 
   // Uncomment to see the list of simple classes found
-  console.log(
-    'Unique simple selectors with prefixes:',
-    uniqueSimpleSelectors
-      .filter(({ prefix }) => !!prefix)
-      .map(({ fullSelector, prefix }) => ({
-        fullSelector,
-        prefix,
-      }))
-  );
+  // console.log(
+  //   'Unique simple selectors with prefixes:',
+  //   uniqueSimpleSelectors
+  //     .filter(({ prefix }) => !!prefix)
+  //     .map(({ fullSelector, prefix }) => ({
+  //       fullSelector,
+  //       prefix,
+  //     }))
+  // );
 
   // TODO: Return array of objects instead of array of strings
 
