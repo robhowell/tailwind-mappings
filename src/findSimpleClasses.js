@@ -80,9 +80,7 @@ const findSimpleClasses = (css) => {
       ];
 
       const selectorWithPrefix = {
-        outputClassName: classesArray
-          .map((className) => `${prefix}${className}`)
-          .join(' '),
+        outputClassName: classesArray.join(' '),
         inputSelector,
         prefix,
       };
@@ -222,31 +220,41 @@ const findSimpleClasses = (css) => {
     simpleSelectors.length
   );
 
-  const simpleSelectorsWithFullPrefix = simpleSelectors.map((selectorItem) => {
-    const { inputSelector, prefix } = selectorItem;
+  const simpleSelectorsWithFullPrefix = simpleSelectors
+    .map((selectorItem) => {
+      const { inputSelector, prefix } = selectorItem;
 
-    const selectorWithAmpersand = inputSelector.replace(
-      firstSubSelectorRegex,
-      '&'
-    );
-
-    const otherSubSelectors = selectorWithAmpersand.matchAll(subSelectorRegex);
-    const numberOfOtherSubSelectors = [...otherSubSelectors].length;
-
-    if (numberOfOtherSubSelectors > 0) {
-      const generalPrefixForSelector = selectorWithAmpersand.replaceAll(
-        ' ',
-        '_'
+      const selectorWithAmpersand = inputSelector.replace(
+        firstSubSelectorRegex,
+        '&'
       );
 
-      return {
-        ...selectorItem,
-        prefix: `[${generalPrefixForSelector}]:${prefix}`,
-      };
-    }
+      const otherSubSelectors =
+        selectorWithAmpersand.matchAll(subSelectorRegex);
+      const numberOfOtherSubSelectors = [...otherSubSelectors].length;
 
-    return selectorItem;
-  });
+      if (numberOfOtherSubSelectors > 0) {
+        const generalPrefixForSelector = selectorWithAmpersand.replaceAll(
+          ' ',
+          '_'
+        );
+
+        return {
+          ...selectorItem,
+          prefix: `[${generalPrefixForSelector}]:${prefix}`,
+        };
+      }
+
+      return selectorItem;
+    })
+    .map(({ outputClassName, prefix = '', ...selectorItem }) => ({
+      ...selectorItem,
+      prefix,
+      outputClassName: outputClassName
+        .split(' ')
+        .map((subSelector) => `${prefix}${subSelector}`)
+        .join(' '),
+    }));
 
   const uniqueSimpleSelectors = uniq(
     simpleSelectorsWithFullPrefix,
