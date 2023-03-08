@@ -93,7 +93,7 @@ const findSimpleClasses = (css) => {
     .filter(({ inputClasses }) => inputClasses.length === 1)
     .map((item) => ({
       ...item,
-      className: item.inputClasses[0],
+      inputClassName: item.inputClasses[0],
     }));
 
   console.log(
@@ -109,10 +109,10 @@ const findSimpleClasses = (css) => {
   const simpleSelectors =
     // Exclude any classes if they are also used within complex selectors
     selectorsWithPseudoVariants.filter((item) => {
-      const { className } = item;
+      const { inputClassName } = item;
 
       const otherSelectorsWithThisClass = selectorsWithSubSelectors.filter(
-        (otherItem) => otherItem.inputClasses.includes(className)
+        (otherItem) => otherItem.inputClasses.includes(inputClassName)
       );
 
       return otherSelectorsWithThisClass.every(
@@ -127,7 +127,7 @@ const findSimpleClasses = (css) => {
 
   const uniqueSimpleSelectors = uniq(
     simpleSelectors,
-    ({ className, prefix }) => `${prefix}${className}`
+    ({ inputClassName, prefix }) => `${prefix}${inputClassName}`
   );
 
   console.log(
