@@ -76,10 +76,10 @@ const findSimpleClasses = (css) => {
       // (:active)" becomes [".Cta", ".VisuallyHidden:not(:focus):not(:active)"]
       const selectors = getSubSelectors(inputSelector);
       // Get all classes, e.g. ".Cta .VisuallyHidden:not(:focus):not(:active)" becomes [".Cta", ".VisuallyHidden"]
-      const classes = getClassesFromSelector(inputSelector);
+      const inputClasses = getClassesFromSelector(inputSelector);
 
       return {
-        classes,
+        inputClasses,
         inputSelector,
         prefix,
         selectors,
@@ -90,10 +90,10 @@ const findSimpleClasses = (css) => {
   // Only include selectors that include exactly one class, while including
   // selectors that also include other sub-selectors, e.g. ".Cta span"
   const selectorsWithOneClass = selectorsWithSubSelectors
-    .filter(({ classes }) => classes.length === 1)
+    .filter(({ inputClasses }) => inputClasses.length === 1)
     .map((item) => ({
       ...item,
-      className: item.classes[0],
+      className: item.inputClasses[0],
     }));
 
   console.log(
@@ -112,11 +112,11 @@ const findSimpleClasses = (css) => {
       const { className } = item;
 
       const otherSelectorsWithThisClass = selectorsWithSubSelectors.filter(
-        (otherItem) => otherItem.classes.includes(className)
+        (otherItem) => otherItem.inputClasses.includes(className)
       );
 
       return otherSelectorsWithThisClass.every(
-        (otherItem) => otherItem.classes.length === 1
+        (otherItem) => otherItem.inputClasses.length === 1
       );
     });
 
