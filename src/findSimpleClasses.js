@@ -1,6 +1,6 @@
 const csstree = require('css-tree');
 
-const { uniq } = require('lodash');
+const { findLast, uniq } = require('lodash');
 const getMediaQueryPrefixesForAtRule = require('./getMediaQueryPrefixesForAtRule');
 const getPseudoVariantPrefixes = require('./getPseudoVariantPrefixes');
 const getSubSelectors = require('./getSubSelectors');
@@ -11,6 +11,7 @@ const removeRedundantCrossBrowserProperties = require('./removeRedundantCrossBro
 const getCssRule = require('./getCssRule');
 const getArrayFromList = require('./getArrayFromList');
 const extractTextClasses = require('./extractTextClasses');
+const getNestedSelectors = require('./getNestedSelectors');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
 // selectors should include only one class, and that class should match the
@@ -101,14 +102,16 @@ const findSimpleClasses = (css) => {
   // Extract classes from each selector
   const selectorsWithSubSelectors = selectorsWithPrefixes.map(
     ({ inputSelector, outputClassName, prefix }) => {
+      const inputNestedSelectors = getNestedSelectors(inputSelector);
       // Get all sub-selectors, e.g. ".Cta .VisuallyHidden:not(:focus):not
       // (:active)" becomes [".Cta", ".VisuallyHidden:not(:focus):not(:active)"]
-      const inputSelectors = getSubSelectors(inputSelector);
+      const inputSelectors = getSubSelectors(inputNestedSelectors);
       // Get all classes, e.g. ".Cta .VisuallyHidden:not(:focus):not(:active)" becomes [".Cta", ".VisuallyHidden"]
       const inputClasses = getClassesFromSelector(inputSelector);
 
       return {
         inputClasses,
+        inputNestedSelectors,
         inputSelector,
         inputSelectors,
         outputClassName,
@@ -117,9 +120,84 @@ const findSimpleClasses = (css) => {
     }
   );
 
+  const simplifiedSelectors = selectorsWithSubSelectors.map((selectorItem) => {
+    const {
+      inputClasses,
+      inputNestedSelectors,
+      inputSelector,
+      inputSelectors,
+      outputClassName,
+      prefix,
+    } = selectorItem;
+
+    if (inputClasses.length > 1) {
+      const lastSelectorContainingClass = findLast(
+        inputNestedSelectors,
+        (nestedSelector) => getClassesFromSelector(nestedSelector)[0]
+      );
+
+      if (
+        lastSelectorContainingClass &&
+        getClassesFromSelector(lastSelectorContainingClass).length === 1
+      ) {
+        const classInLastSelector = getClassesFromSelector(
+          lastSelectorContainingClass
+        )[0];
+
+        const inputSelectorSplit = inputSelector.split(classInLastSelector);
+
+        if (inputSelectorSplit.length > 2) {
+          // If the selector contains more than one instance of the class, then
+          // it is a more complex selector that cannot be easily converted.
+          return selectorItem;
+        }
+
+        const ancestorPrefix = inputSelectorSplit[0];
+        const classWithAncestorPrefix = `${ancestorPrefix}${classInLastSelector}`;
+
+        // Get all selectors with this class
+        const allSelectorsWithThisClass = selectorsWithSubSelectors.filter(
+          (otherSelector) =>
+            otherSelector.inputClasses.includes(classInLastSelector)
+        );
+
+        if (
+          allSelectorsWithThisClass.every(({ inputSelector }) =>
+            inputSelector.startsWith(classWithAncestorPrefix)
+          )
+        ) {
+          const inputSimpleSelector = inputSelector.replace(
+            classWithAncestorPrefix,
+            classInLastSelector
+          );
+
+          // console.log('inputSelector', inputSelector);
+          // console.log('inputSimpleSelector', inputSimpleSelector);
+
+          return {
+            ...selectorItem,
+            // Include full selector and full classes in case we need them later
+            // in the process
+            inputFullClasses: inputClasses,
+            inputFullSelector: inputSelector,
+            inputSelector: inputSimpleSelector,
+            inputClasses: getClassesFromSelector(inputSimpleSelector),
+          };
+        }
+      }
+    }
+
+    return selectorItem;
+  });
+
+  console.log(
+    'Total of complex selectors that can be simplified',
+    simplifiedSelectors.filter((item) => !!item.inputSimpleSelector).length
+  );
+
   // Only include selectors that include exactly one class, while including
   // selectors that also include other sub-selectors, e.g. ".Cta span"
-  const selectorsWithOneClass = selectorsWithSubSelectors
+  const selectorsWithOneClass = simplifiedSelectors
     .filter(({ inputClasses }) => inputClasses.length === 1)
     .map((item) => ({
       ...item,
@@ -136,7 +214,7 @@ const findSimpleClasses = (css) => {
     selectorsWithOneClass.filter((item) => {
       const { inputClassName } = item;
 
-      const otherSelectorsWithThisClass = selectorsWithSubSelectors.filter(
+      const otherSelectorsWithThisClass = simplifiedSelectors.filter(
         (otherItem) => otherItem.inputClasses.includes(inputClassName)
       );
 
