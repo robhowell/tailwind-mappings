@@ -5,6 +5,7 @@ const getMediaQueryPrefixesForAtRule = require('./getMediaQueryPrefixesForAtRule
 const getPseudoVariantPrefix = require('./getPseudoVariantPrefix');
 const getSubSelectors = require('./getSubSelectors');
 const removeDuplicates = require('./removeDuplicates');
+const getClassesFromSelector = require('./getClassesFromSelector');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
 // selectors should include only one class, and that class should match the
@@ -71,13 +72,11 @@ const findSimpleClasses = (css) => {
   // Extract classes from each selector
   const selectorsWithSubSelectors = selectorsWithPrefixes.map(
     ({ fullSelector, prefix }) => {
+      // Get all sub-selectors, e.g. ".Cta .VisuallyHidden:not(:focus):not
+      // (:active)" becomes [".Cta", ".VisuallyHidden:not(:focus):not(:active)"]
       const selectors = getSubSelectors(fullSelector);
-
-      // Create array of class selectors (e.g. ".Cta:hover") and remove any
-      // pseudo selectors (e.g. ":hover") or pseudo elements (e.g. "::before")
-      const classes = selectors
-        .filter((item) => item.startsWith('.'))
-        .map((className) => className.split(':')[0]);
+      // Get all classes, e.g. ".Cta .VisuallyHidden:not(:focus):not(:active)" becomes [".Cta", ".VisuallyHidden"]
+      const classes = getClassesFromSelector(fullSelector);
 
       return {
         classes,
@@ -88,11 +87,10 @@ const findSimpleClasses = (css) => {
     }
   );
 
-  // Only include selectors that have exactly one class
+  // Only include selectors that include exactly one class, while including
+  // selectors that also include other sub-selectors, e.g. ".Cta span"
   const selectorsWithOneClass = selectorsWithSubSelectors
-    .filter(
-      ({ selectors }) => selectors.length === 1 && selectors[0].startsWith('.')
-    )
+    .filter(({ classes }) => classes.length === 1)
     .map((item) => ({
       ...item,
       className: item.classes[0],
@@ -118,7 +116,7 @@ const findSimpleClasses = (css) => {
       );
 
       return otherSelectorsWithThisClass.every(
-        (otherItem) => otherItem.selectors.length === 1
+        (otherItem) => otherItem.classes.length === 1
       );
     });
 
