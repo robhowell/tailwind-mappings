@@ -12,6 +12,7 @@ const getCssRule = require('./getCssRule');
 const getArrayFromList = require('./getArrayFromList');
 const extractTextClasses = require('./extractTextClasses');
 const getNestedSelectors = require('./getNestedSelectors');
+const { firstSubSelectorRegex, subSelectorRegex } = require('./regex');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
 // selectors should include only one class, and that class should match the
@@ -121,14 +122,7 @@ const findSimpleClasses = (css) => {
   );
 
   const simplifiedSelectors = selectorsWithSubSelectors.map((selectorItem) => {
-    const {
-      inputClasses,
-      inputNestedSelectors,
-      inputSelector,
-      inputSelectors,
-      outputClassName,
-      prefix,
-    } = selectorItem;
+    const { inputClasses, inputNestedSelectors, inputSelector } = selectorItem;
 
     if (inputClasses.length > 1) {
       const lastSelectorContainingClass = findLast(
@@ -228,8 +222,34 @@ const findSimpleClasses = (css) => {
     simpleSelectors.length
   );
 
+  const simpleSelectorsWithFullPrefix = simpleSelectors.map((selectorItem) => {
+    const { inputSelector, prefix } = selectorItem;
+
+    const selectorWithAmpersand = inputSelector.replace(
+      firstSubSelectorRegex,
+      '&'
+    );
+
+    const otherSubSelectors = selectorWithAmpersand.matchAll(subSelectorRegex);
+    const numberOfOtherSubSelectors = [...otherSubSelectors].length;
+
+    if (numberOfOtherSubSelectors > 0) {
+      const generalPrefixForSelector = selectorWithAmpersand.replaceAll(
+        ' ',
+        '_'
+      );
+
+      return {
+        ...selectorItem,
+        prefix: `[${generalPrefixForSelector}]:${prefix}`,
+      };
+    }
+
+    return selectorItem;
+  });
+
   const uniqueSimpleSelectors = uniq(
-    simpleSelectors,
+    simpleSelectorsWithFullPrefix,
     ({ inputClassName, prefix }) => `${prefix}${inputClassName}`
   );
 
