@@ -2,7 +2,7 @@ const csstree = require('css-tree');
 
 const { uniq } = require('lodash');
 const getMediaQueryPrefixesForAtRule = require('./getMediaQueryPrefixesForAtRule');
-const getPseudoVariantPrefix = require('./getPseudoVariantPrefix');
+const getPseudoVariantPrefixes = require('./getPseudoVariantPrefixes');
 const getSubSelectors = require('./getSubSelectors');
 const removeDuplicates = require('./removeDuplicates');
 const getClassesFromSelector = require('./getClassesFromSelector');
@@ -29,24 +29,24 @@ const findSimpleClasses = (css) => {
       //   console.log('this.function', this.function);
       // }
 
-      const mediaQueryClasses = getMediaQueryPrefixesForAtRule(atRule);
+      const inputSelector = csstree.generate(node);
+
+      const mediaQueryPrefixes = getMediaQueryPrefixesForAtRule(atRule);
+      const pseudoVariantPrefixes = getPseudoVariantPrefixes(inputSelector);
 
       // TODO: Also spread pseudo selectors & elements into the prefixes array
-      const prefixes = [...mediaQueryClasses];
+      const prefixes = [...mediaQueryPrefixes, pseudoVariantPrefixes];
 
       // If "[@media(hover:hover)]" and "hover" are both in the prefixes array,
       // then remove "[@media(hover:hover)]" from the array because it is
       // redundant in Tailwind CSS.
+      const prefixesWithoutUnnecessaryHover =
+        prefixes.includes('[@media(hover:hover)]:') &&
+        prefixes.includes('hover:')
+          ? prefixes.filter((prefix) => prefix !== '[@media(hover:hover)]:')
+          : prefixes;
 
-      // TODO: Add support for pseudo selectors
-      // hover:m-1
-
-      // TODO: Add support for pseudo elements
-      // before:m-1
-
-      const inputSelector = csstree.generate(node);
-
-      const prefix = removeDuplicates(prefixes)
+      const prefix = removeDuplicates(prefixesWithoutUnnecessaryHover)
         .sort()
         .map((item) => `${item}:`)
         .join('');
@@ -101,14 +101,9 @@ const findSimpleClasses = (css) => {
     selectorsWithOneClass.length
   );
 
-  const selectorsWithPseudoVariants = selectorsWithOneClass.map((item) => ({
-    ...item,
-    prefix: `${item.prefix}${getPseudoVariantPrefix(item.inputSelector)}`,
-  }));
-
   const simpleSelectors =
     // Exclude any classes if they are also used within complex selectors
-    selectorsWithPseudoVariants.filter((item) => {
+    selectorsWithOneClass.filter((item) => {
       const { inputClassName } = item;
 
       const otherSelectorsWithThisClass = selectorsWithSubSelectors.filter(

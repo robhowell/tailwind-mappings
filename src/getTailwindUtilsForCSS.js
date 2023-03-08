@@ -13,6 +13,7 @@ const getTailwindUtilsForCSS = (css) => {
   csstree.walk(ast, function nodeFunction(node) {
     if (node.type === 'Selector') {
       const selectorString = csstree.generate(node);
+
       const cssRulesList = this.rule.block.children.map(getCssRule);
       const cssRules = getArrayFromList(cssRulesList);
 
