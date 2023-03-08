@@ -74,7 +74,7 @@ const findSimpleClasses = (css) => {
     ({ inputSelector, prefix }) => {
       // Get all sub-selectors, e.g. ".Cta .VisuallyHidden:not(:focus):not
       // (:active)" becomes [".Cta", ".VisuallyHidden:not(:focus):not(:active)"]
-      const selectors = getSubSelectors(inputSelector);
+      const inputSelectors = getSubSelectors(inputSelector);
       // Get all classes, e.g. ".Cta .VisuallyHidden:not(:focus):not(:active)" becomes [".Cta", ".VisuallyHidden"]
       const inputClasses = getClassesFromSelector(inputSelector);
 
@@ -82,7 +82,7 @@ const findSimpleClasses = (css) => {
         inputClasses,
         inputSelector,
         prefix,
-        selectors,
+        inputSelectors,
       };
     }
   );
