@@ -6,6 +6,11 @@ const getPseudoVariantPrefixes = require('./getPseudoVariantPrefixes');
 const getSubSelectors = require('./getSubSelectors');
 const removeDuplicates = require('./removeDuplicates');
 const getClassesFromSelector = require('./getClassesFromSelector');
+const getTailwindUtils = require('./tailwind-utils');
+const removeRedundantCrossBrowserProperties = require('./removeRedundantCrossBrowserProperties');
+const getCssRule = require('./getCssRule');
+const getArrayFromList = require('./getArrayFromList');
+const extractTextClasses = require('./extractTextClasses');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
 // selectors should include only one class, and that class should match the
@@ -31,11 +36,13 @@ const findSimpleClasses = (css) => {
 
       const inputSelector = csstree.generate(node);
 
-      const mediaQueryPrefixes = getMediaQueryPrefixesForAtRule(atRule);
+      const mediaQueryPrefixes = getMediaQueryPrefixesForAtRule(atRule).map(
+        (prefix) => `${prefix}:`
+      );
       const pseudoVariantPrefixes = getPseudoVariantPrefixes(inputSelector);
 
       // TODO: Also spread pseudo selectors & elements into the prefixes array
-      const prefixes = [...mediaQueryPrefixes, pseudoVariantPrefixes];
+      const prefixes = [...mediaQueryPrefixes, ...pseudoVariantPrefixes];
 
       // If "[@media(hover:hover)]" and "hover" are both in the prefixes array,
       // then remove "[@media(hover:hover)]" from the array because it is
@@ -48,10 +55,32 @@ const findSimpleClasses = (css) => {
 
       const prefix = removeDuplicates(prefixesWithoutUnnecessaryHover)
         .sort()
-        .map((item) => `${item}:`)
+        .filter((item) => !!item)
         .join('');
 
+      const cssRulesList = this.rule.block.children.map(getCssRule);
+      const cssRules = getArrayFromList(cssRulesList);
+
+      const filteredCssRules = cssRules.filter(
+        removeRedundantCrossBrowserProperties
+      );
+
+      const [nonTextCssRules, textClassesForSelector] =
+        extractTextClasses(filteredCssRules);
+
+      const tailwindClassesForSelector = nonTextCssRules.map((cssRule) =>
+        getTailwindUtils(cssRule)
+      );
+
+      const classesArray = [
+        ...textClassesForSelector,
+        ...tailwindClassesForSelector,
+      ];
+
       const selectorWithPrefix = {
+        outputClassName: classesArray
+          .map((className) => `${prefix}${className}`)
+          .join(' '),
         inputSelector,
         prefix,
       };
@@ -71,7 +100,7 @@ const findSimpleClasses = (css) => {
 
   // Extract classes from each selector
   const selectorsWithSubSelectors = selectorsWithPrefixes.map(
-    ({ inputSelector, prefix }) => {
+    ({ inputSelector, outputClassName, prefix }) => {
       // Get all sub-selectors, e.g. ".Cta .VisuallyHidden:not(:focus):not
       // (:active)" becomes [".Cta", ".VisuallyHidden:not(:focus):not(:active)"]
       const inputSelectors = getSubSelectors(inputSelector);
@@ -81,8 +110,9 @@ const findSimpleClasses = (css) => {
       return {
         inputClasses,
         inputSelector,
-        prefix,
         inputSelectors,
+        outputClassName,
+        prefix,
       };
     }
   );
