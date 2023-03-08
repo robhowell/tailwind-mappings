@@ -156,11 +156,7 @@ const findSimpleClasses = (css) => {
         ({ fullSelector }) =>
           !fullSelector.includes(' ') && !fullSelector.includes('>')
       )
-      .map(({ fullSelector }) => fullSelector)
   );
 };
 
 module.exports = findSimpleClasses;
-
-// Regex to find simple classes with modifier suffixes such as :hover
-// /\.[a-zA-Z-_0-9]+(:[a-z\-]+)+/g
