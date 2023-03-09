@@ -220,9 +220,10 @@ const findSimpleClasses = (css) => {
         '&'
       );
 
-      const otherSubSelectors =
-        selectorWithAmpersand.matchAll(subSelectorRegex);
-      const numberOfOtherSubSelectors = [...otherSubSelectors].length;
+      const otherSubSelectors = [
+        ...selectorWithAmpersand.matchAll(subSelectorRegex),
+      ];
+      const numberOfOtherSubSelectors = otherSubSelectors.length;
 
       if (numberOfOtherSubSelectors > 0) {
         const generalPrefixForSelector = selectorWithAmpersand.replaceAll(
@@ -243,42 +244,12 @@ const findSimpleClasses = (css) => {
       outputPrefix,
       outputClassName: outputClassName
         .split(' ')
+        // Add the prefix to each sub-selector
         .map((subSelector) => `${outputPrefix}${subSelector}`)
         .join(' '),
     }));
 
-  const uniqueSimpleSelectors = uniq(
-    simpleSelectorsWithFullPrefix,
-    ({ inputClassName, outputPrefix }) => `${outputPrefix}${inputClassName}`
-  );
-
-  console.log(
-    'Total number of unique simple classes that can be automatically converted:',
-    uniqueSimpleSelectors.length
-  );
-
-  // Uncomment to see the list of simple classes found
-  // console.log(
-  //   'Unique simple selectors with prefixes:',
-  //   uniqueSimpleSelectors
-  //     .filter(({ outputPrefix }) => !!outputPrefix)
-  //     .map(({ inputSelector, outputPrefix }) => ({
-  //       inputSelector,
-  //       outputPrefix,
-  //     }))
-  // );
-
-  // TODO: Return array of objects instead of array of strings
-
-  return (
-    uniqueSimpleSelectors
-      // TODO: Remove this filter once support for more complex selectors is
-      // added, e.g. ".Cta span"
-      .filter(
-        ({ inputSelector }) =>
-          !inputSelector.includes(' ') && !inputSelector.includes('>')
-      )
-  );
+  return simpleSelectorsWithFullPrefix;
 };
 
 module.exports = findSimpleClasses;
