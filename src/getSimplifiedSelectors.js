@@ -34,6 +34,25 @@ const getSimplifiedSelectors = (selectors) =>
         }
 
         const ancestorPrefix = inputSelectorSplit[0];
+
+        // If any class within the ancestor prefix ends with open, closed, show
+        // or hide, then it is a more complex selector that cannot be easily
+        // converted and should be skipped.
+
+        const ancestorPrefixClasses = getClassesFromSelector(ancestorPrefix);
+
+        if (
+          ancestorPrefixClasses.some(
+            (ancestorClass) =>
+              ancestorClass.endsWith('open') ||
+              ancestorClass.endsWith('closed') ||
+              ancestorClass.endsWith('show') ||
+              ancestorClass.endsWith('hide')
+          )
+        ) {
+          return selectorItem;
+        }
+
         const classWithAncestorPrefix = `${ancestorPrefix}${classInLastSelector}`;
 
         // Get all selectors with this class
@@ -58,9 +77,9 @@ const getSimplifiedSelectors = (selectors) =>
             ...selectorItem,
             // Include full selector and full classes in case we need them later
             // in the process
-            inputClasses: getClassesFromSelector(inputSimpleSelector),
             inputFullClasses: inputClasses,
             inputFullSelector: inputSelector,
+            inputClasses: getClassesFromSelector(inputSimpleSelector),
             inputSelector: inputSimpleSelector,
           };
         }
