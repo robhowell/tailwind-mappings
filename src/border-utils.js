@@ -35,7 +35,8 @@ function getBorderUtils(decl) {
   if (
     decl.value.includes('#') ||
     decl.value.includes('rgb') ||
-    decl.value.includes('transparent')
+    decl.value.includes('transparent') ||
+    decl.value.includes('red')
   ) {
     const [width, style, ...colorValue] = borderValues;
     const color = colorValue.join(' ');
