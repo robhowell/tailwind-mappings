@@ -28,6 +28,7 @@ const prefixMap = {
   height: 'h',
   left: 'left',
   margin: 'm',
+  opacity: 'opacity',
   padding: 'p',
   right: 'right',
   stroke: 'stroke',

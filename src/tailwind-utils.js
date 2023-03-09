@@ -84,8 +84,7 @@ const getTailwindUtilsForClassWithoutImportant = (decl) => {
       decl.value = '0' + decl.value;
     }
 
-    // TODO: Add support for unknown opacity values
-    return prop[decl.value] || '';
+    return prop[decl.value] || getArbitraryClass(decl);
   }
 
   if (prop && prop[decl.value]) {
