@@ -175,7 +175,7 @@ const findSimpleClasses = (css) => {
 
   console.log(
     'Total of complex selectors that can be simplified',
-    simplifiedSelectors.filter((item) => !!item.inputSimpleSelector).length
+    simplifiedSelectors.filter((item) => !!item.inputFullSelector).length
   );
 
   // Only include selectors that include exactly one class, while including
