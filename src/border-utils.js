@@ -61,12 +61,62 @@ function getBorderColorUtils(decl) {
   const color = decl.value;
   const borderValues = color.split(' ');
 
-  if (borderValues.length >= 2) {
-    const borderColorClasses = borderValues
-      .map((value) => borderColor[value] || getColorUtils({ ...decl, value }))
-      .join(' ');
+  if (borderValues.length === 2) {
+    /* top and bottom | left and right */
+    const borderClassY = TAILWIND_CLASSES['border-y-color'][borderValues[0]];
+    const borderClassX = TAILWIND_CLASSES['border-x-color'][borderValues[1]];
 
-    return borderColorClasses;
+    if (!borderClassY || !borderClassX) {
+      console.log(
+        'Matching border values not found, must be manually converted',
+        decl
+      );
+      return '';
+    }
+
+    return `${borderClassY} ${borderClassX}`;
+  } else if (borderValues.length === 3) {
+    /* top | left and right | bottom */
+    const borderClassTop =
+      TAILWIND_CLASSES['border-top-color'][borderValues[0]];
+    const borderClassX = TAILWIND_CLASSES['border-x-color'][borderValues[1]];
+    const borderClassBottom =
+      TAILWIND_CLASSES['border-bottom-color'][borderValues[2]];
+
+    if (!borderClassTop || !borderClassX || !borderClassBottom) {
+      console.log(
+        'Matching border values not found, must be manually converted',
+        decl
+      );
+      return '';
+    }
+
+    return `${borderClassTop} ${borderClassX} ${borderClassBottom}`;
+  } else if (borderValues.length === 4) {
+    /* top | right | bottom | left */
+    const borderClassTop =
+      TAILWIND_CLASSES['border-top-color'][borderValues[0]];
+    const borderClassRight =
+      TAILWIND_CLASSES['border-right-color'][borderValues[1]];
+    const borderClassBottom =
+      TAILWIND_CLASSES['border-bottom-color'][borderValues[2]];
+    const borderClassLeft =
+      TAILWIND_CLASSES['border-left-color'][borderValues[3]];
+
+    if (
+      !borderClassTop ||
+      !borderClassRight ||
+      !borderClassBottom ||
+      !borderClassLeft
+    ) {
+      console.log(
+        'Matching border values not found, must be manually converted',
+        decl
+      );
+      return '';
+    }
+
+    return `${borderClassTop} ${borderClassLeft} ${borderClassBottom} ${borderClassRight}`;
   }
 
   const _color = borderColor[color] || getColorUtils(decl);
