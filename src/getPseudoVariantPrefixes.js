@@ -5,14 +5,25 @@ const getTailwindPrefixForVariant = (variant) =>
   pseudoVariantMappings[variant.replace(':', '').replace(':', '')] ??
   `[&${variant}]`;
 
+// TODO: Only get pseudo variants from the last sub-selector that includes only
+// one class
 const getPseudoVariantPrefixes = (selector) => {
   const variants = getPseudoVariants(selector);
 
-  if (!variants.length) {
+  // if (selector.includes(':hover')) {
+  //   console.log('Selector with hover', selector);
+  //   console.log('variants for selector', variants);
+  // }
+
+  if (selector && !variants.length) {
     return [];
   }
 
-  return variants.map((variant) => `${getTailwindPrefixForVariant(variant)}:`);
+  const prefixArray = variants.map(
+    (variant) => `${getTailwindPrefixForVariant(variant)}:`
+  );
+
+  return prefixArray;
 };
 
 module.exports = getPseudoVariantPrefixes;

@@ -46,7 +46,7 @@ const findSimpleClasses = (css) => {
           ? prefixes.filter((prefix) => prefix !== '[@media(hover:hover)]:')
           : prefixes;
 
-      const prefix = removeDuplicates(prefixesWithoutUnnecessaryHover)
+      const outputPrefix = removeDuplicates(prefixesWithoutUnnecessaryHover)
         .sort()
         .filter((item) => !!item)
         .join('');
@@ -73,7 +73,7 @@ const findSimpleClasses = (css) => {
       const selectorWithPrefix = {
         outputClassName: classesArray.join(' '),
         inputSelector,
-        prefix,
+        outputPrefix,
       };
 
       // if (selectorWithPrefix.prefix) {
@@ -91,7 +91,7 @@ const findSimpleClasses = (css) => {
 
   // Extract classes from each selector
   const selectorsWithSubSelectors = selectorsWithPrefixes.map(
-    ({ inputSelector, outputClassName, prefix }) => {
+    ({ inputSelector, outputClassName, outputPrefix }) => {
       const inputNestedSelectors = getNestedSelectors(inputSelector);
       // Get all sub-selectors, e.g. ".Cta .VisuallyHidden:not(:focus):not
       // (:active)" becomes [".Cta", ".VisuallyHidden:not(:focus):not(:active)"]
@@ -105,7 +105,7 @@ const findSimpleClasses = (css) => {
         inputSelector,
         inputSelectors,
         outputClassName,
-        prefix,
+        outputPrefix,
       };
     }
   );
@@ -213,7 +213,7 @@ const findSimpleClasses = (css) => {
 
   const simpleSelectorsWithFullPrefix = simpleSelectors
     .map((selectorItem) => {
-      const { inputSelector, prefix } = selectorItem;
+      const { inputSelector, outputPrefix } = selectorItem;
 
       const selectorWithAmpersand = inputSelector.replace(
         firstSubSelectorRegex,
@@ -232,24 +232,24 @@ const findSimpleClasses = (css) => {
 
         return {
           ...selectorItem,
-          prefix: `[${generalPrefixForSelector}]:${prefix}`,
+          outputPrefix: `[${generalPrefixForSelector}]:${outputPrefix}`,
         };
       }
 
       return selectorItem;
     })
-    .map(({ outputClassName, prefix = '', ...selectorItem }) => ({
+    .map(({ outputClassName, outputPrefix = '', ...selectorItem }) => ({
       ...selectorItem,
-      prefix,
+      outputPrefix,
       outputClassName: outputClassName
         .split(' ')
-        .map((subSelector) => `${prefix}${subSelector}`)
+        .map((subSelector) => `${outputPrefix}${subSelector}`)
         .join(' '),
     }));
 
   const uniqueSimpleSelectors = uniq(
     simpleSelectorsWithFullPrefix,
-    ({ inputClassName, prefix }) => `${prefix}${inputClassName}`
+    ({ inputClassName, outputPrefix }) => `${outputPrefix}${inputClassName}`
   );
 
   console.log(
@@ -261,10 +261,10 @@ const findSimpleClasses = (css) => {
   // console.log(
   //   'Unique simple selectors with prefixes:',
   //   uniqueSimpleSelectors
-  //     .filter(({ prefix }) => !!prefix)
-  //     .map(({ inputSelector, prefix }) => ({
+  //     .filter(({ outputPrefix }) => !!outputPrefix)
+  //     .map(({ inputSelector, outputPrefix }) => ({
   //       inputSelector,
-  //       prefix,
+  //       outputPrefix,
   //     }))
   // );
 
