@@ -1,3 +1,5 @@
+const getArbitraryClass = require('./getArbitraryClass');
+
 const getValueBetweenBrackets = (value) => {
   const openBracket = value.indexOf('(');
   const closeBracket = value.indexOf(')');
@@ -16,9 +18,7 @@ const getUnknownClass = (prop, value) => {
       return `scale-[${getValueBetweenBrackets(value)}]`;
   }
 
-  console.error(`Unknown value: ${prop}: ${value}`);
-
-  return '';
+  return getArbitraryClass({ prop, value });
 };
 
 module.exports = getUnknownClass;
