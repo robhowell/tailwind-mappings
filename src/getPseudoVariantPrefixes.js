@@ -1,21 +1,28 @@
 const getPseudoVariants = require('./getPseudoVariants');
 const pseudoVariantMappings = require('./pseudoVariantMappings');
+const getPrimaryNestedSelector = require('./getPrimaryNestedSelector');
+const replaceAll = require('./replaceAll');
 
 const getTailwindPrefixForVariant = (variant) =>
-  pseudoVariantMappings[variant.replace(':', '').replace(':', '')] ??
-  `[&${variant}]`;
+  replaceAll(
+    pseudoVariantMappings[variant.replace(':', '').replace(':', '')] ??
+      `[&${variant}]`,
+    ' ',
+    '_'
+  );
 
-// TODO: Only get pseudo variants from the last sub-selector that includes only
-// one class
-const getPseudoVariantPrefixes = (selector) => {
+// TODO: Only get pseudo variants from the last sub-selector that includes at
+// least one class
+const getPseudoVariantPrefixes = (selector = '') => {
+  const primaryNestedSelector = getPrimaryNestedSelector(selector);
+
+  if (!primaryNestedSelector) {
+    return [];
+  }
+
   const variants = getPseudoVariants(selector);
 
-  // if (selector.includes(':hover')) {
-  //   console.log('Selector with hover', selector);
-  //   console.log('variants for selector', variants);
-  // }
-
-  if (selector && !variants.length) {
+  if (!variants.length) {
     return [];
   }
 
