@@ -1,6 +1,5 @@
 const csstree = require('css-tree');
 
-const { findLast, uniq } = require('lodash');
 const getMediaQueryPrefixesForAtRule = require('./getMediaQueryPrefixesForAtRule');
 const getPseudoVariantPrefixes = require('./getPseudoVariantPrefixes');
 const getSubSelectors = require('./getSubSelectors');
@@ -12,6 +11,7 @@ const getCssRule = require('./getCssRule');
 const getArrayFromList = require('./getArrayFromList');
 const extractTextClasses = require('./extractTextClasses');
 const getNestedSelectors = require('./getNestedSelectors');
+const getSimplifiedSelectors = require('./getSimplifiedSelectors');
 const { firstSubSelectorRegex, subSelectorRegex } = require('./regex');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
@@ -110,68 +110,7 @@ const findSimpleClasses = (css) => {
     }
   );
 
-  const simplifiedSelectors = selectorsWithSubSelectors.map((selectorItem) => {
-    const { inputClasses, inputNestedSelectors, inputSelector } = selectorItem;
-
-    if (inputClasses.length > 1) {
-      const lastSelectorContainingClass = findLast(
-        inputNestedSelectors,
-        (nestedSelector) => getClassesFromSelector(nestedSelector)[0]
-      );
-
-      if (
-        lastSelectorContainingClass &&
-        getClassesFromSelector(lastSelectorContainingClass).length === 1
-      ) {
-        const classInLastSelector = getClassesFromSelector(
-          lastSelectorContainingClass
-        )[0];
-
-        const inputSelectorSplit = inputSelector.split(classInLastSelector);
-
-        if (inputSelectorSplit.length > 2) {
-          // If the selector contains more than one instance of the class, then
-          // it is a more complex selector that cannot be easily converted.
-          return selectorItem;
-        }
-
-        const ancestorPrefix = inputSelectorSplit[0];
-        const classWithAncestorPrefix = `${ancestorPrefix}${classInLastSelector}`;
-
-        // Get all selectors with this class
-        const allSelectorsWithThisClass = selectorsWithSubSelectors.filter(
-          (otherSelector) =>
-            otherSelector.inputClasses.includes(classInLastSelector)
-        );
-
-        if (
-          allSelectorsWithThisClass.every(({ inputSelector }) =>
-            inputSelector.startsWith(classWithAncestorPrefix)
-          )
-        ) {
-          const inputSimpleSelector = inputSelector.replace(
-            classWithAncestorPrefix,
-            classInLastSelector
-          );
-
-          // console.log('inputSelector', inputSelector);
-          // console.log('inputSimpleSelector', inputSimpleSelector);
-
-          return {
-            ...selectorItem,
-            // Include full selector and full classes in case we need them later
-            // in the process
-            inputFullClasses: inputClasses,
-            inputFullSelector: inputSelector,
-            inputSelector: inputSimpleSelector,
-            inputClasses: getClassesFromSelector(inputSimpleSelector),
-          };
-        }
-      }
-    }
-
-    return selectorItem;
-  });
+  const simplifiedSelectors = getSimplifiedSelectors(selectorsWithSubSelectors);
 
   console.log(
     'Total of complex selectors that can be simplified',
