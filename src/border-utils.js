@@ -4,6 +4,7 @@ const TAILWIND_CLASSES = require('./constants');
 
 const chroma = require('chroma-js');
 const getColorUtils = require('./color-utils');
+const getArbitraryClass = require('./getArbitraryClass');
 
 // Get the nearest matching Tailwind value
 function getClosestKey(valueHash, value) {
@@ -28,30 +29,88 @@ function getBorderUtils(decl) {
 
   const borderValues = decl.value.split(' ');
 
-  if (borderValues.length > 2) {
+  /* width */
+
+  /* width | style | color */
+  if (
+    decl.value.includes('#') ||
+    decl.value.includes('rgb') ||
+    decl.value.includes('transparent')
+  ) {
     const [width, style, ...colorValue] = borderValues;
-    const color = colorValue.join('');
+    const color = colorValue.join(' ');
 
     const borderWidth = TAILWIND_CLASSES['border-width'];
     const borderStyle = TAILWIND_CLASSES['border-style'];
     const borderColor = TAILWIND_CLASSES['border-color'];
-    const borderOpacity = TAILWIND_CLASSES['border-opacity'];
 
-    const _width = borderWidth[width] || 'border';
-    const _style = borderStyle[style] || '';
-    const _color = borderColor[color] || getColorUtils(decl);
+    const widthClass =
+      borderWidth[width] ||
+      getArbitraryClass({
+        prop: 'border-width',
+        value: width,
+      });
 
-    let result = _width + ' ' + _style + ' ' + _color;
+    const styleClass =
+      borderStyle[style] ||
+      getArbitraryClass({
+        prop: 'border-style',
+        value: style,
+      });
 
-    if (color.includes('rgba')) {
-      const [, , , opacity] = chroma(color)._rgb;
-      const closestKey = getClosestKey(borderOpacity, opacity);
-      const _opacity = borderOpacity[opacity] || borderOpacity[closestKey];
-      result += ' ' + _opacity;
-    }
+    const colorClass =
+      borderColor[color] ||
+      getArbitraryClass({
+        prop: 'border-color',
+        value: color,
+      });
 
-    return result;
-  } else return '';
+    return `${widthClass} ${styleClass} ${colorClass}`;
+  }
+
+  if (borderValues.length === 1) {
+    const [width] = borderValues;
+
+    const borderWidth = TAILWIND_CLASSES['border-width'];
+
+    const widthClass =
+      borderWidth[width] ||
+      getArbitraryClass({
+        prop: 'border-width',
+        value: width,
+      });
+
+    return widthClass;
+  }
+
+  /* width | style (CSS allow "style | color" but we don't use that) */
+  if (borderValues.length === 2) {
+    const [width, style] = borderValues;
+
+    const borderWidth = TAILWIND_CLASSES['border-width'];
+    const borderStyle = TAILWIND_CLASSES['border-style'];
+
+    const widthClass =
+      borderWidth[width] ||
+      getArbitraryClass({
+        prop: 'border-width',
+        value: width,
+      });
+
+    const styleClass =
+      borderStyle[style] ||
+      getArbitraryClass({
+        prop: 'border-style',
+        value: style,
+      });
+
+    return `${widthClass} ${styleClass}`;
+  }
+
+  console.log(
+    'Unable to convert border value, must be manually converted',
+    decl
+  );
 }
 
 function getBorderColorUtils(decl) {
