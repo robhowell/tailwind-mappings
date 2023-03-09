@@ -120,6 +120,12 @@ function getTailwindUtils(incomingDecl) {
       'right',
       'top',
       'bottom',
+      'width',
+      'height',
+      'min-width',
+      'min-height',
+      'max-width',
+      'max-height',
     ].includes(decl.prop)
   ) {
     return getSpacingUtils(decl, decl.prop) ?? getArbitraryClass(decl);

@@ -21,9 +21,12 @@ const spacingProps = {
 
 const getSizeClass = (propertyName, currentValue) => {
   const currentValueString = `${currentValue}`;
+
+  // Standardise values to include a leading zero if they start with a decimal
   const value = currentValueString.startsWith('.')
     ? currentValueString.replace('.', '0.')
     : currentValueString;
+
   const isNegative = value.startsWith('-');
   const positiveValue = isNegative ? value.substring(1) : value;
 
