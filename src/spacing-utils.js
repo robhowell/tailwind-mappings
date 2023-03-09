@@ -2,6 +2,7 @@
 
 const TAILWIND_CLASSES = require('./constants');
 const convertPxtoRem = require('./convertPxtoRem');
+const getArbitraryClass = require('./getArbitraryClass');
 
 const spacingProps = {
   margin: {
@@ -16,19 +17,6 @@ const spacingProps = {
     bottom: 'padding-bottom',
     left: 'padding-left',
   },
-};
-
-const spacingMapping = {
-  margin: 'm',
-  'margin-left': 'ml',
-  'margin-right': 'mr',
-  'margin-top': 'mt',
-  'margin-bottom': 'mb',
-  padding: 'p',
-  'padding-left': 'pl',
-  'padding-right': 'pr',
-  'padding-top': 'pt',
-  'padding-bottom': 'pb',
 };
 
 const getSizeClass = (propertyName, currentValue) => {
@@ -54,12 +42,11 @@ const getSizeClass = (propertyName, currentValue) => {
   }
 
   // If no matching value is found then return the original value using an
-  // arbitary value
-  const arbitraryClass = `${spacingMapping[propertyName]}-[${value.replace(
-    ' ',
-    '_'
-  )}]`;
-  return arbitraryClass;
+  // arbitary class
+  return getArbitraryClass({
+    prop: propertyName,
+    value: currentValue,
+  });
 };
 
 const replaceIfNotArbitraryValue = (value, original, replacement) => {

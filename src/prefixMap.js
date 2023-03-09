@@ -25,6 +25,16 @@ const prefixMap = {
   transform: 'transform',
   transition: 'transition',
   width: 'w',
+  margin: 'm',
+  'margin-left': 'ml',
+  'margin-right': 'mr',
+  'margin-top': 'mt',
+  'margin-bottom': 'mb',
+  padding: 'p',
+  'padding-left': 'pl',
+  'padding-right': 'pr',
+  'padding-top': 'pt',
+  'padding-bottom': 'pb',
 };
 
 module.exports = prefixMap;

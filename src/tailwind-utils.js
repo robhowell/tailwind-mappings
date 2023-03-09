@@ -97,8 +97,9 @@ function getTailwindUtils(incomingDecl) {
 
   if (
     arbitraryProperties.includes(decl.prop) ||
-    decl.value.includes('url') ||
-    decl.value.includes('var')
+    decl.value.includes('url(') ||
+    decl.value.includes('var(') ||
+    decl.value.includes('calc(')
   ) {
     return getArbitraryClass(decl);
   }
@@ -121,7 +122,7 @@ function getTailwindUtils(incomingDecl) {
       'bottom',
     ].includes(decl.prop)
   ) {
-    return getSpacingUtils(decl, decl.prop);
+    return getSpacingUtils(decl, decl.prop) ?? getArbitraryClass(decl);
   }
 
   if (decl.prop === 'border') {

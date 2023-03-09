@@ -28,14 +28,6 @@ const findSimpleClasses = (css) => {
     if (node.type === 'Selector') {
       const atRule = this.atrule;
 
-      // Call this.function recursively to find any instances of
-      // PseudoClassSelector and PseudoElementSelector - collect the names and
-      // then return an array of them.
-
-      // if (this.function) {
-      //   console.log('this.function', this.function);
-      // }
-
       const inputSelector = csstree.generate(node);
 
       const mediaQueryPrefixes = getMediaQueryPrefixesForAtRule(atRule).map(
@@ -43,7 +35,6 @@ const findSimpleClasses = (css) => {
       );
       const pseudoVariantPrefixes = getPseudoVariantPrefixes(inputSelector);
 
-      // TODO: Also spread pseudo selectors & elements into the prefixes array
       const prefixes = [...mediaQueryPrefixes, ...pseudoVariantPrefixes];
 
       // If "[@media(hover:hover)]" and "hover" are both in the prefixes array,
