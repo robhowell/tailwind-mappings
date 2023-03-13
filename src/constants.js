@@ -2054,6 +2054,12 @@ const TAILWIND_CLASSES = {
     'scaleY(1.5)': 'scale-y-150',
     'scaleY(1)': 'scale-y-100',
     'scaleX(-1)': 'scale-x-[-1]',
+    'rotate(45deg)': 'rotate-45',
+    'rotate(90deg)': 'rotate-90',
+    'rotate(180deg)': 'rotate-180',
+    'rotate(-45deg)': '-rotate-45',
+    'rotate(-90deg)': '-rotate-90',
+    'rotate(-180deg)': '-rotate-180',
   },
   'transform-origin': {
     bottom: 'origin-bottom',
