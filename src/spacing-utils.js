@@ -52,11 +52,11 @@ const getSizeClass = (propertyName, currentValue) => {
   });
 };
 
-const replaceIfNotArbitraryValue = (value, original, replacement) => {
-  if (value.includes('[')) return value;
+// const replaceIfNotArbitraryValue = (value, original, replacement) => {
+//   if (value.includes('[')) return value;
 
-  return value.replace(original, replacement);
-};
+//   return value.replace(original, replacement);
+// };
 
 function getSpacingUtils(decl) {
   // Add support for var and calc in getSpacingUtils
@@ -78,10 +78,7 @@ function getSpacingUtils(decl) {
     const px = getSizeClass(spacingProps[propName].left, leftRight);
     const py = getSizeClass(spacingProps[propName].top, topBottom);
 
-    output =
-      replaceIfNotArbitraryValue(px, 'l', 'x') +
-      ' ' +
-      replaceIfNotArbitraryValue(py, 't', 'y');
+    output = px.replace('l', 'x') + ' ' + py.replace('t', 'y');
   }
 
   // padding: top leftRight bottom;
@@ -92,7 +89,7 @@ function getSpacingUtils(decl) {
     const px = getSizeClass(spacingProps[propName].left, leftRight);
     const pb = getSizeClass(spacingProps[propName].bottom, bottom);
 
-    output = pt + ' ' + replaceIfNotArbitraryValue(px, 'l', 'x') + ' ' + pb;
+    output = pt + ' ' + px.replace('l', 'x') + ' ' + pb;
   }
 
   // padding: top right bottom left;
