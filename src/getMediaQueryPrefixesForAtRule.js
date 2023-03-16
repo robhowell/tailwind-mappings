@@ -38,11 +38,11 @@ const getMediaQueryPrefixForItem = (item) => {
   }
 
   if (item.name === 'min-width') {
-    return `min-w-[${valueWithUnit}]`;
+    return `min-[${valueWithUnit}]`;
   }
 
   if (item.name === 'max-width') {
-    return `max-w-[${valueWithUnit}]`;
+    return `max-[${valueWithUnit}]`;
   }
 
   return `[@media(${item.name}:${valueWithUnit})]`;
