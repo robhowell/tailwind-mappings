@@ -94,8 +94,8 @@ const TAILWIND_CLASSES = {
     '#f7f2e8': 'bg-yellow-light',
     '#1977f2': 'bg-facebook',
     transparent: 'bg-transparent',
-    '0 0': 'bg-none',
-    none: 'bg-none',
+    '0 0': '[background:none]',
+    none: '[background:none]',
   },
   'background-attachment': {
     fixed: 'bg-fixed',
