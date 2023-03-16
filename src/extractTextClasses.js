@@ -15,17 +15,17 @@ const extractTextClasses = (cssRules) => {
         cssRulesAcc.find(
           (cssRule) =>
             cssRule.prop === 'font-size' &&
-            cssRule.value === properties['font-size']
+            cssRule.value.replace('0.', '.') === properties['font-size']
         ) &&
         cssRulesAcc.find(
           (cssRule) =>
             cssRule.prop === 'line-height' &&
-            cssRule.value === properties['line-height']
+            cssRule.value.replace('0.', '.') === properties['line-height']
         ) &&
         cssRulesAcc.find(
           (cssRule) =>
             cssRule.prop === 'letter-spacing' &&
-            cssRule.value === properties['letter-spacing']
+            cssRule.value.replace('0.', '.') === properties['letter-spacing']
         )
       ) {
         return {
@@ -33,15 +33,16 @@ const extractTextClasses = (cssRules) => {
             (cssRule) =>
               !(
                 cssRule.prop === 'font-size' &&
-                cssRule.value === properties['font-size']
+                cssRule.value.replace('0.', '.') === properties['font-size']
               ) &&
               !(
                 cssRule.prop === 'line-height' &&
-                cssRule.value === properties['line-height']
+                cssRule.value.replace('0.', '.') === properties['line-height']
               ) &&
               !(
                 cssRule.prop === 'letter-spacing' &&
-                cssRule.value === properties['letter-spacing']
+                cssRule.value.replace('0.', '.') ===
+                  properties['letter-spacing']
               )
           ),
           textClasses: [...textClassesAcc, className],
