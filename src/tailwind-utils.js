@@ -106,7 +106,8 @@ function getTailwindUtils(incomingDecl) {
   // remove !important from values
   const val = incomingDecl.value
     .replace(' !important', '')
-    .replace('!important', '');
+    .replace('!important', '')
+    .trim();
 
   const decl = {
     ...incomingDecl,
