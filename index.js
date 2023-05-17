@@ -8,10 +8,12 @@ const getColorUtils = require('./src/color-utils');
 const getTailwindUtils = require('./src/tailwind-utils');
 const getTailwindUtilsForCSS = require('./src/getTailwindUtilsForCSS');
 const findSimpleClasses = require('./src/findSimpleClasses');
+const findAllClasses = require('./src/findAllClasses');
 
 module.exports = {
   TAILWIND_CLASSES,
   findSimpleClasses,
+  findAllClasses,
   getBorderRadiusUtils,
   getBorderUtils,
   getColorUtils,
