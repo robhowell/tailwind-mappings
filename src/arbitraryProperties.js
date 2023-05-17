@@ -42,6 +42,7 @@ const arbitraryProperties = [
   'text-rendering',
   'text-shadow',
   'transform-style',
+  'transition',
   'transition-property',
 ];
 

@@ -34,7 +34,6 @@ const prefixMap = {
   stroke: 'stroke',
   top: 'top',
   transform: 'transform',
-  transition: 'transition',
   width: 'w',
 };
 
