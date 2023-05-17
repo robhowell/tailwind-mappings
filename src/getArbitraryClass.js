@@ -11,6 +11,8 @@ const getArbitraryClass = (decl) => {
     (value) => replaceAll(value, '\t', ' '),
     (value) => value.trim(),
     (value) => replaceAll(value, ' ', '_'),
+    (value) => replaceAll(value, ')_)', '))'),
+    (value) => replaceAll(value, ')_)', '))'),
   ])(decl.value.trim());
 
   // Add logging for specific arbitrary values here
