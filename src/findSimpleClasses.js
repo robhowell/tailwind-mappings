@@ -12,7 +12,9 @@ const getArrayFromList = require('./getArrayFromList');
 const extractTextClasses = require('./extractTextClasses');
 const getNestedSelectors = require('./getNestedSelectors');
 const getSimplifiedSelectors = require('./getSimplifiedSelectors');
-const { firstSubSelectorRegex, subSelectorRegex } = require('./regex');
+const filterFinalTailwindClass = require('./filterFinalTailwindClass');
+const addPrefixForNestedSelectors = require('./addPrefixForNestedSelectors');
+const addMissingAllElementSelectors = require('./addMissingAllElementSelectors');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
 // selectors should include only one class, and that class should match the
@@ -28,7 +30,9 @@ const findSimpleClasses = (css) => {
     if (node.type === 'Selector') {
       const atRule = this.atrule;
 
-      const inputSelector = csstree.generate(node);
+      const inputSelector = addMissingAllElementSelectors(
+        csstree.generate(node)
+      );
 
       const mediaQueryPrefixes = getMediaQueryPrefixesForAtRule(atRule).map(
         (prefix) => `${prefix}:`
@@ -151,33 +155,7 @@ const findSimpleClasses = (css) => {
   );
 
   const simpleSelectorsWithFullPrefix = simpleSelectors
-    .map((selectorItem) => {
-      const { inputSelector, outputPrefix } = selectorItem;
-
-      const selectorWithAmpersand = inputSelector.replace(
-        firstSubSelectorRegex,
-        '&'
-      );
-
-      const otherSubSelectors = [
-        ...selectorWithAmpersand.matchAll(subSelectorRegex),
-      ];
-      const numberOfOtherSubSelectors = otherSubSelectors.length;
-
-      if (numberOfOtherSubSelectors > 0) {
-        const generalPrefixForSelector = selectorWithAmpersand.replaceAll(
-          ' ',
-          '_'
-        );
-
-        return {
-          ...selectorItem,
-          outputPrefix: `[${generalPrefixForSelector}]:${outputPrefix}`,
-        };
-      }
-
-      return selectorItem;
-    })
+    .map(addPrefixForNestedSelectors)
     .map(({ outputClassName, outputPrefix = '', ...selectorItem }) => ({
       ...selectorItem,
       outputPrefix,
@@ -185,6 +163,7 @@ const findSimpleClasses = (css) => {
         .split(' ')
         // Add the prefix to each sub-selector
         .map((subSelector) => `${outputPrefix}${subSelector}`)
+        .map(filterFinalTailwindClass)
         .join(' '),
     }));
 

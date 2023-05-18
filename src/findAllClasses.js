@@ -11,7 +11,9 @@ const getCssRule = require('./getCssRule');
 const getArrayFromList = require('./getArrayFromList');
 const extractTextClasses = require('./extractTextClasses');
 const getNestedSelectors = require('./getNestedSelectors');
-const { firstSubSelectorRegex, subSelectorRegex } = require('./regex');
+const filterFinalTailwindClass = require('./filterFinalTailwindClass');
+const addPrefixForNestedSelectors = require('./addPrefixForNestedSelectors');
+const addMissingAllElementSelectors = require('./addMissingAllElementSelectors');
 
 // This function finds all class-based selectors in the provided CSS.
 const findAllClasses = (css) => {
@@ -23,12 +25,19 @@ const findAllClasses = (css) => {
     if (node.type === 'Selector') {
       const atRule = this.atrule;
 
-      const inputSelector = csstree.generate(node);
+      const inputSelector = addMissingAllElementSelectors(
+        csstree.generate(node)
+      );
 
       const mediaQueryPrefixes = getMediaQueryPrefixesForAtRule(atRule).map(
         (prefix) => `${prefix}:`
       );
       const pseudoVariantPrefixes = getPseudoVariantPrefixes(inputSelector);
+
+      // console.log(
+      //   'pseudoVariantPrefixes:',
+      //   JSON.stringify(pseudoVariantPrefixes, null, 2)
+      // );
 
       const prefixes = [...mediaQueryPrefixes, ...pseudoVariantPrefixes];
 
@@ -60,6 +69,11 @@ const findAllClasses = (css) => {
         getTailwindUtils(cssRule)
       );
 
+      // console.log(
+      //   'tailwindClassesForSelector:',
+      //   JSON.stringify(tailwindClassesForSelector, null, 2)
+      // );
+
       const classesArray = [
         ...textClassesForSelector,
         ...tailwindClassesForSelector,
@@ -70,6 +84,11 @@ const findAllClasses = (css) => {
         inputSelector,
         outputPrefix,
       };
+
+      // console.log(
+      //   'selectorWithPrefix:',
+      //   JSON.stringify(selectorWithPrefix, null, 2)
+      // );
 
       selectorsWithPrefixes.push(selectorWithPrefix);
     }
@@ -102,33 +121,7 @@ const findAllClasses = (css) => {
   );
 
   const selectorsWithFullPrefix = selectorsWithSubSelectors
-    .map((selectorItem) => {
-      const { inputSelector, outputPrefix } = selectorItem;
-
-      const selectorWithAmpersand = inputSelector.replace(
-        firstSubSelectorRegex,
-        '&'
-      );
-
-      const otherSubSelectors = [
-        ...selectorWithAmpersand.matchAll(subSelectorRegex),
-      ];
-      const numberOfOtherSubSelectors = otherSubSelectors.length;
-
-      if (numberOfOtherSubSelectors > 0) {
-        const generalPrefixForSelector = selectorWithAmpersand.replaceAll(
-          ' ',
-          '_'
-        );
-
-        return {
-          ...selectorItem,
-          outputPrefix: `[${generalPrefixForSelector}]:${outputPrefix}`,
-        };
-      }
-
-      return selectorItem;
-    })
+    .map(addPrefixForNestedSelectors)
     .map(({ outputClassName, outputPrefix = '', ...selectorItem }) => ({
       ...selectorItem,
       outputPrefix,
@@ -136,6 +129,7 @@ const findAllClasses = (css) => {
         .split(' ')
         // Add the prefix to each sub-selector
         .map((subSelector) => `${outputPrefix}${subSelector}`)
+        .map(filterFinalTailwindClass)
         .join(' '),
     }));
 
