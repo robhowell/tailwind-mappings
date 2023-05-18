@@ -50,7 +50,16 @@ const findAllClasses = (css) => {
           ? prefixes.filter((prefix) => prefix !== '[@media(hover:hover)]:')
           : prefixes;
 
-      const outputPrefix = removeDuplicates(prefixesWithoutUnnecessaryHover)
+      const hasComplexNesting =
+        prefixesWithoutUnnecessaryHover.some((prefix) =>
+          prefix.includes('not(.')
+        ) ?? undefined;
+
+      const outputPrefix = removeDuplicates(
+        prefixesWithoutUnnecessaryHover.filter(
+          (prefix) => !prefix.includes('not(.')
+        )
+      )
         .sort()
         .filter((item) => !!item)
         .join('');
@@ -83,6 +92,7 @@ const findAllClasses = (css) => {
         outputClassName: classesArray.join(' '),
         inputSelector,
         outputPrefix,
+        hasComplexNesting,
       };
 
       // console.log(
@@ -101,12 +111,13 @@ const findAllClasses = (css) => {
 
   // Extract classes from each selector
   const selectorsWithSubSelectors = selectorsWithPrefixes.map(
-    ({ inputSelector, outputClassName, outputPrefix }) => {
+    ({ hasComplexNesting, inputSelector, outputClassName, outputPrefix }) => {
       const inputNestedSelectors = getNestedSelectors(inputSelector);
       // Get all classes, e.g. ".Cta .VisuallyHidden:not(:focus):not(:active)" becomes [".Cta", ".VisuallyHidden"]
       const inputClasses = getClassesFromSelector(inputSelector);
 
       return {
+        hasComplexNesting,
         inputClasses,
         inputNestedSelectors,
         inputSelector,
