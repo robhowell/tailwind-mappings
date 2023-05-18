@@ -97,9 +97,6 @@ const findSimpleClasses = (css) => {
   const selectorsWithSubSelectors = selectorsWithPrefixes.map(
     ({ inputSelector, outputClassName, outputPrefix }) => {
       const inputNestedSelectors = getNestedSelectors(inputSelector);
-      // Get all sub-selectors, e.g. ".Cta .VisuallyHidden:not(:focus):not
-      // (:active)" becomes [".Cta", ".VisuallyHidden:not(:focus):not(:active)"]
-      const inputSelectors = getSubSelectors(inputNestedSelectors);
       // Get all classes, e.g. ".Cta .VisuallyHidden:not(:focus):not(:active)" becomes [".Cta", ".VisuallyHidden"]
       const inputClasses = getClassesFromSelector(inputSelector);
 
@@ -107,7 +104,6 @@ const findSimpleClasses = (css) => {
         inputClasses,
         inputNestedSelectors,
         inputSelector,
-        inputSelectors,
         outputClassName,
         outputPrefix,
       };
