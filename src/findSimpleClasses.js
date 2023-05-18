@@ -152,19 +152,20 @@ const findSimpleClasses = (css) => {
 
   const simpleSelectorsWithFullPrefix = simpleSelectors
     .map(addPrefixForNestedSelectors)
-    .map(({ outputClassName, outputPrefix = '', ...selectorItem }) => ({
-      ...selectorItem,
-      outputPrefix: stripHoverMediaQueryFromPrefix(outputPrefix),
-      outputClassName: outputClassName
-        .split(' ')
-        // Add the prefix to each sub-selector
-        .map(
-          (subSelector) =>
-            `${stripHoverMediaQueryFromPrefix(outputPrefix)}${subSelector}`
-        )
-        .map(filterFinalTailwindClass)
-        .join(' '),
-    }));
+    .map(({ outputClassName, outputPrefix = '', ...selectorItem }) => {
+      const finalOutputPrefix = stripHoverMediaQueryFromPrefix(outputPrefix);
+
+      return {
+        ...selectorItem,
+        outputPrefix: finalOutputPrefix,
+        outputClassName: outputClassName
+          .split(' ')
+          // Add the prefix to each sub-selector
+          .map((subSelector) => `${finalOutputPrefix}${subSelector}`)
+          .map(filterFinalTailwindClass)
+          .join(' '),
+      };
+    });
 
   return simpleSelectorsWithFullPrefix;
 };
