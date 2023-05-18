@@ -14,6 +14,9 @@ const thirdPartyPrefixes = [
   '.zoom-mode',
 ];
 
+const isThirdPartyClass = (selector) =>
+  thirdPartyPrefixes.some((prefix) => selector.startsWith(prefix));
+
 const addPrefixForNestedSelectors = (selectorItem) => {
   const { inputSelector, outputPrefix } = selectorItem;
 
@@ -22,12 +25,13 @@ const addPrefixForNestedSelectors = (selectorItem) => {
   // If at least two of the classes that are not external classes are in the
   // selector.
   const hasComplexNesting =
+    isThirdPartyClass(inputSelector) ||
     allSubSelectors
       .map((match) => match[0])
       .filter(
         (selector) =>
           // Exclude third-party classes
-          !thirdPartyPrefixes.some((prefix) => selector.startsWith(prefix))
+          !isThirdPartyClass(selector)
       )
       .filter((selector) => selector.startsWith('.')).length >= 2;
 
