@@ -2,7 +2,6 @@ const csstree = require('css-tree');
 
 const getMediaQueryPrefixesForAtRule = require('./getMediaQueryPrefixesForAtRule');
 const getPseudoVariantPrefixes = require('./getPseudoVariantPrefixes');
-const getSubSelectors = require('./getSubSelectors');
 const removeDuplicates = require('./removeDuplicates');
 const getClassesFromSelector = require('./getClassesFromSelector');
 const getTailwindUtils = require('./tailwind-utils');
@@ -15,6 +14,7 @@ const getSimplifiedSelectors = require('./getSimplifiedSelectors');
 const filterFinalTailwindClass = require('./filterFinalTailwindClass');
 const addPrefixForNestedSelectors = require('./addPrefixForNestedSelectors');
 const addMissingAllElementSelectors = require('./addMissingAllElementSelectors');
+const stripHoverMediaQueryFromPrefix = require('./stripHoverMediaQueryFromPrefix');
 
 // This function finds simple class-based selectors in the provided CSS. Simple
 // selectors should include only one class, and that class should match the
@@ -154,11 +154,14 @@ const findSimpleClasses = (css) => {
     .map(addPrefixForNestedSelectors)
     .map(({ outputClassName, outputPrefix = '', ...selectorItem }) => ({
       ...selectorItem,
-      outputPrefix,
+      outputPrefix: stripHoverMediaQueryFromPrefix(outputPrefix),
       outputClassName: outputClassName
         .split(' ')
         // Add the prefix to each sub-selector
-        .map((subSelector) => `${outputPrefix}${subSelector}`)
+        .map(
+          (subSelector) =>
+            `${stripHoverMediaQueryFromPrefix(outputPrefix)}${subSelector}`
+        )
         .map(filterFinalTailwindClass)
         .join(' '),
     }));
