@@ -53,7 +53,9 @@ const addPrefixForNestedSelectors = (selectorItem) => {
   const numberOfOtherSubSelectors = otherSubSelectors.length;
 
   if (numberOfOtherSubSelectors > 0) {
-    const generalPrefixForSelector = selectorWithAmpersand.replaceAll(' ', '_');
+    const generalPrefixForSelector = selectorWithAmpersand
+      .replaceAll('_', '\\_')
+      .replaceAll(' ', '_');
 
     return {
       ...selectorItem,
