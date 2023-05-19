@@ -4,6 +4,7 @@ const thirdPartyPrefixes = [
   '.__react_component_tooltip',
   '.cylindo',
   '.dropzone',
+  '.iiz',
   '.infinite-scroll-component',
   '.Mui',
   '.mxt',
